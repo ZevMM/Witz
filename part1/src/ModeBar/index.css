@@ -37,10 +37,14 @@
     position: absolute;
     bottom: 6px;
     height: 50px;
-    width: 60px;
+    padding-top: 42px;
+    width: 110px;
+    padding-left: 25px;
+    padding-right: 25px;
     background-color: transparent;
+    background-clip:content-box;
 }
 .other:hover {
-    border-bottom: 8px solid #666666;
+    background-color: #666666;
 }
 
