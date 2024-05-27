@@ -1,0 +1,22 @@
+#navbar {
+    width: 100%;
+    height: 60px;
+    display:flex;
+    background-image: url("../assets/gradient.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.navelement {
+    padding: 20px;
+    cursor: pointer;
+}
+
+#logo {
+    font-size: x-large;
+    font-weight: bolder;
+    font-family: Georgia;
+}

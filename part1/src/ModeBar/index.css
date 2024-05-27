@@ -1,0 +1,33 @@
+#modebar {
+    width: 100%;
+    height: 50px;
+    display:flex;
+    background-color: #f3f3f3ff;
+    justify-content: start;
+    align-items: center;
+    color: #666666;
+    z-index: 2;
+    box-shadow: 0 2px 2px -2px rgb(0, 0, 0);
+}
+
+.modeelement {
+    padding: 20px;
+    font-family: Georgia;
+    font-size: larger;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.selected {
+    color: black;
+}
+
+.underline {
+    position: absolute;
+    bottom: 6px;
+    height: 8px;
+    width: 60px;
+    background-color: #0b5394ff;
+}

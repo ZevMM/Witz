@@ -1,0 +1,32 @@
+.table {
+    background: transparent;
+    width: 100%;
+    margin: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.handle {
+    cursor: grab;
+    height: 18px;
+    width: 10px;
+    margin-right: 10px;
+    background: transparent;
+    border: none;
+    background-image: url("../../../../assets/grip.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.handle:active {
+    cursor: grabbing;
+}
+
+.openSymbol {
+    border: none;
+    background: transparent;
+    margin-left: 10px;
+    font-size: larger;
+    font-family: "Nunito", sans-serif;
+}

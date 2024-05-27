@@ -1,0 +1,10 @@
+#constructsidebar {
+    width: 20%;
+    align-self: stretch;
+    display:flex;
+    flex: 1;
+    background-color: #f3f3f3ff;
+    justify-content: center;
+    color: black;
+    font-family: Georgia;
+}
