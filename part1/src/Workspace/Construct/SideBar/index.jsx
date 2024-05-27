@@ -2,15 +2,22 @@ import { useState } from 'react'
 import './index.css'
 
 function SideBar({type}) {
-  switch (type) {
-    case 'Add':
-      return <div id="constructsidebar">Preset</div>
-    case 'Undo':
-      return <div id="constructsidebar">Custom</div>
-    case 'Redo':
-      return <div id="constructsidebar">Animate</div>
-    case 'Clear':
-      return <div id="constructsidebar">Export</div>
+  if (type == 'Add') {
+    return (
+      <div id="constructsidebar">
+        <h3>Add Holding</h3>
+        <div style={{ borderTop: "1px solid black ", width: 200, height: 2, marginTop: "15px"}}></div>
+        <form>
+          <input type={"select"} />
+        </form>
+        <div style={{ borderTop: "1px solid black ", width: 200, height: 2, marginTop: "15px"}}></div>
+        <form style={{display: "flex", flexDirection: "column"}}>
+          <input type={"select"} />
+          <input type={"select"} />
+          <button type={"submit"}> Add </button>
+        </form>
+      </div>
+    )
   }
 }
 

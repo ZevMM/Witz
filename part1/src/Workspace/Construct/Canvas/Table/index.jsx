@@ -15,7 +15,7 @@ function Table({id, title, data, open, collapse}) {
     const isOpen = (open, data) => {
         if (open) {
             return (
-                <table>
+                <table className="assettable">
                     <thead>
                         <tr>
                             {data[0].map((head) => <th>{head}</th>)}
@@ -39,7 +39,7 @@ function Table({id, title, data, open, collapse}) {
     return (
         <div ref={setNodeRef} className="table" key={id} style={style}>
         <div style={{display: "flex", alignItems: "center"}}>
-        <button  {...attributes} {...listeners} className="handle"></button>
+        <button  {...attributes} {...listeners} className="handle">⁝⁝</button>
         {title}
         <button onClick={() => collapse(id)} className="openSymbol"> {openSymbol(open)} </button>
         </div>

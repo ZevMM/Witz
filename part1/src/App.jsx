@@ -9,14 +9,10 @@ function App() {
   const [mode, setMode] = useState('')
   const [full, setFull] = useState(false)
 
-  if (full) {
-    return <Workspace mode={mode} full={full} setFull={setFull}/>
-  }
-
   return (
     <div id="container">
-      <NavBar />
-      <ModeBar mode={mode} setMode={setMode} />
+      <NavBar full={full}/>
+      <ModeBar mode={mode} setMode={setMode} full={full}/>
       <Workspace mode={mode} full={full} setFull={setFull} />
     </div>
   )

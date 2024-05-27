@@ -1,6 +1,5 @@
 .table {
     background: transparent;
-    width: 100%;
     margin: 18px;
     display: flex;
     flex-direction: column;
@@ -9,14 +8,11 @@
 
 .handle {
     cursor: grab;
-    height: 18px;
-    width: 10px;
     margin-right: 10px;
     background: transparent;
     border: none;
-    background-image: url("../../../../assets/grip.png");
-    background-size: contain;
-    background-repeat: no-repeat;
+    font-weight: 500;
+    font-size: large;
 }
 
 .handle:active {
@@ -29,4 +25,33 @@
     margin-left: 10px;
     font-size: larger;
     font-family: "Nunito", sans-serif;
+}
+
+.assettable {
+    background-color: #9e9e9e;
+}
+
+table {
+    border-spacing: 1px;
+    font-weight: inherit;
+    font-size: small;
+    font-weight: 300;
+}
+
+tr {
+    background-color: #f3f3f3ff;
+    color: #9e9e9e;
+}
+
+th {
+    color: black;
+    font-weight: 400;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #d9d9d9ff;
+}
+
+td {
+    padding-left: 5px;
 }

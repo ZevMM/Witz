@@ -11,13 +11,20 @@ const ModeElement = ({text, status, handleClick}) => {
     )
     
   }
-  return <span className="modeelement" onClick={handleClick}>{text}</span>
+  return (
+    <span className="modeelement" onClick={handleClick}>
+    {text}
+    <div className="other"></div>
+    </span>
+  )
 } 
 
-function ModeBar({mode, setMode}) {
+function ModeBar({mode, setMode, full}) {
 
   
   const changeMode = (choice) => {setMode(choice)}
+
+  if (full) { return }
 
   return (
     <div id="modebar">

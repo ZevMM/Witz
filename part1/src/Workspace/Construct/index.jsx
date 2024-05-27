@@ -32,9 +32,9 @@ function Construct({full, setFull, portfolio, setPortfolio}) {
 
     const FullButton = () => {
         if (full) {
-            return <ActionElement text='Down' handleClick={() => setFull(false)} />
+            return <ActionElement text='∨' handleClick={() => setFull(false)} />
         }
-        return <ActionElement text='Up' handleClick={() => setFull(true)} />
+        return <ActionElement text='∧' handleClick={() => setFull(true)} />
     }
 
     const getTaskPos = id => portfolio.findIndex(portfolio => portfolio.id === id)
@@ -52,14 +52,20 @@ function Construct({full, setFull, portfolio, setPortfolio}) {
         })
     }
 
+    //options: ↩↪↶↷↺↻
+    //more options: ⨇⨈⩔⩕⩖⩢⩣⩠⩞Ø🚫➕✖️🟰✕⇊⇈
+
     return (
       <div style={{display: "flex", height: "100%"}}>
         <div style={{display: "flex", flex: 3, flexDirection: "column"}}>
             <div id="actionbar">
+                <div>
                 <ActionElement text='Add' handleClick={() => changeSide('Add')}/>
+                <ActionElement text='Clear' handleClick={() => changeSide('Clear')}/>
                 <ActionElement text='Undo' handleClick={() => changeSide('Undo')}/>
                 <ActionElement text='Redo' handleClick={() => changeSide('Redo')}/>
-                <ActionElement text='Clear' handleClick={() => changeSide('Clear')}/>
+                <ActionElement text='Collapse' handleClick={() => changeSide('Clear')}/>
+                </div>
                 <FullButton />
             </div>
             <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>

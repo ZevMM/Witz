@@ -23,7 +23,9 @@ const Left = () => {
   )
 }
 
-function NavBar() {
+function NavBar({full}) {
+
+  if (full) {return}
 
   return (
     <div id="navbar">

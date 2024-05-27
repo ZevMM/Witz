@@ -3,15 +3,19 @@
   height: 50px;
   display:flex;
   background-color: #0b5394ff;
-  justify-content: start;
+  justify-content: space-between;
   align-items: center;
   color: white;
 }
 
 .actionelement {
-  padding: 20px;
+  padding: 10px 20px;
   font-size: larger;
   cursor: pointer;
+}
+
+.actionelement:hover {
+  background-color: #25649dff;
 }
 
 #sidebar {

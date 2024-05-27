@@ -20,6 +20,7 @@
     cursor: pointer;
 }
 
+
 .selected {
     color: black;
 }
@@ -31,3 +32,15 @@
     width: 60px;
     background-color: #0b5394ff;
 }
+
+.other {
+    position: absolute;
+    bottom: 6px;
+    height: 50px;
+    width: 60px;
+    background-color: transparent;
+}
+.other:hover {
+    border-bottom: 8px solid #666666;
+}
+
