@@ -1,0 +1,13 @@
+#analyzesidebar {
+    width: 20%;
+    align-self: stretch;
+    display:flex;
+    flex-direction: column;
+    flex: 1;
+    background-color: #f3f3f3ff;
+    justify-content: start;
+    align-items: center;
+    color: black;
+    font-family: Georgia;
+    padding-top: 15px;
+}
