@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import './index.css'
 
-
 const toggleCharts = (isOn, name, layout, setLayout) => {
   const maxY = Math.max(...layout.map(c => c.y))
   const lowest = layout.find(c => c.y === maxY)
