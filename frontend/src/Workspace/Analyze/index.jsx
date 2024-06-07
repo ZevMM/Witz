@@ -1,12 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './index.css'
 import SideBar from './SideBar'
 import Canvas from './Canvas'
 
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
-function Analyze({layout, setLayout, full, setFull, portfolio, setPortfolio}) {
+function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsUpdated}) {
 
+    useEffect(() => {
+        if (!isUpdated) {
+            console.log("need to update")
+            setIsUpdated(true)
+        } else {
+            console.log("already updated")
+        }
+    }, [])
 
     const [side, setSide] = useState('')
 
@@ -30,8 +38,8 @@ function Analyze({layout, setLayout, full, setFull, portfolio, setPortfolio}) {
         <div style={{display: "flex", flex: 4, flexDirection: "column"}}>
             <div id="actionbar">
                 <div>
-                <ActionElement text='Preset' handleClick={() => changeSide('Add')}/>
-                <ActionElement text='Custom' handleClick={() => changeSide('Clear')}/>
+                <ActionElement text='Preset' handleClick={() => changeSide('Preset')}/>
+                <ActionElement text='Custom' handleClick={() => changeSide('Custom')}/>
                 <ActionElement text='Clear' handleClick={() => changeSide('Undo')}/>
                 <ActionElement text='Export' handleClick={() => changeSide('Redo')}/>
                 </div>
