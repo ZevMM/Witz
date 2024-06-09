@@ -15,9 +15,6 @@ function Workspace({mode, full, setFull}) {
   ])
 
   const [layout, setLayout] = useState([
-    { i: "a", x: 0, y: 0, w: 1, h: 2 },
-    { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2},
-    { i: "c", x: 4, y: 0, w: 1, h: 2 }
   ])
 
   const [isUpdated, setIsUpdated] = useState(false)

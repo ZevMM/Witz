@@ -2,16 +2,13 @@ import { useState } from 'react'
 import './index.css'
 
 const toggleCharts = (isOn, name, layout, setLayout) => {
-  const maxY = Math.max(...layout.map(c => c.y))
-  const lowest = layout.find(c => c.y === maxY)
-  
   if (isOn) {
     const newItem = {
       i : name,
-      x : lowest.x,
-      y : lowest.h + maxY,
-      w : lowest.w,
-      h : lowest.h
+      x : (3 * layout.length % 12),
+      y : Infinity,
+      w : 3,
+      h : 6
     }
     setLayout(layout.concat(newItem))
   } else {
