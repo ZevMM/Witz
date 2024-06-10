@@ -1,8 +1,8 @@
 import React from 'react'
 import { useState } from "react"
 import './index.css'
-import renderBarChart from './Charts/BarChart';
-import Widget from './Charts/Widget.jsx';
+import RenderBarChart from './Charts/BarChart';
+import {Widget1, Widget2, Widget3} from './Charts/Widget.jsx';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 import { PieChart, Pie, LineChart, Line, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
@@ -34,7 +34,7 @@ const data02 = [
   { name: 'D2', value: 50 },
 ];
 
-const renderLineChart = (
+const RenderLineChart = () => {return (
   <ResponsiveContainer width="100%" height="100%">
   <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
     <Line type="monotone" dataKey="uv" stroke="#feb570ff" />
@@ -43,21 +43,24 @@ const renderLineChart = (
     <Tooltip />
   </LineChart>
   </ResponsiveContainer>
-);
+);}
 
-const renderPieChart = (
+const RenderPieChart = () => {return (
   <ResponsiveContainer width="100%" height="100%">
   <PieChart width="100%" height="100%">
     <Pie data={data01} dataKey="value" cx="50%" cy="50%" outerRadius={"48%"} fill="#fe8070ff" />
     <Pie data={data02} dataKey="value" cx="50%" cy="50%" innerRadius={"64%"} outerRadius={"83%"} fill="#7aa5e2ff" label />
   </PieChart>
   </ResponsiveContainer>
-)
+);}
 
 const chartMap = {
-  "chart1" : renderLineChart,
-  "chart2" : renderBarChart,
-  "chart3" : Widget
+  "chart1" : <RenderLineChart />,
+  "chart2" : <RenderBarChart />,
+  "chart3" : <RenderPieChart />,
+  "chart4" : <Widget1 />,
+  "chart5" : <Widget2 />,
+  "chart6" : <Widget3 />
 }
 
 const ReactGridLayout = WidthProvider(RGL);

@@ -55,7 +55,7 @@ const data = [
     amt: 2100,
   },
 ];
-const renderBarChart = (
+const RenderBarChart = () => {return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
         width={500}
@@ -78,6 +78,6 @@ const renderBarChart = (
         <Bar dataKey="uv" fill="#bfee77ff" stackId="stack" />
       </BarChart>
     </ResponsiveContainer>
-);
+);}
 
-export default renderBarChart
+export default RenderBarChart
