@@ -55,14 +55,14 @@ const ChartCheckbox = ({id, name, layout, setLayout}) => {
     return (
       <div style={{ display: "inline-block", width: "75%", marginBottom: "5px", color: "#666666"}}>
       <input type="checkbox" id={id} name={id} onClick={(e) => toggleCharts(e.target.checked, e.target.name, layout, setLayout)} checked/>
-      <label htmlFor={id}>{name}</label>
+      <label htmlFor={id} style={{marginLeft: "5px"}}>{name}</label>
       </div>
     )
   }
   return (
     <div style={{ display: "inline-block", width: "75%", marginBottom: "5px", color: "#666666"}}>
     <input type="checkbox" id={id} name={id} onClick={(e) => toggleCharts(e.target.checked, e.target.name, layout, setLayout)}/>
-    <label htmlFor={id}>{name}</label>
+    <label htmlFor={id} style={{marginLeft: "5px"}}>{name}</label>
     </div>
   )
 }
