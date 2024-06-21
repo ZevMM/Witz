@@ -14,6 +14,16 @@ function Workspace({mode, full, setFull}) {
     { id: 4, title: "Cryptocurrency", data: [["Interest", "Principal", "Term"]], open: true}
   ])
 
+  const [report, setReport] = useState({
+    data0 : null,
+    data1 : null,
+    data2 : null,
+    data3 : null,
+    data4 : null,
+    data5 : null,
+    data6 : null
+  })
+
   const [layout, setLayout] = useState([
   ])
 
@@ -25,7 +35,7 @@ function Workspace({mode, full, setFull}) {
     case "Construct":
       return <Construct full={full} setFull={setFull} portfolio={portfolio} setPortfolio={setPortfolio}/>
     case "Analyze":
-      return <Analyze isUpdated= {isUpdated} layout={layout} setLayout={setLayout} full={full} setFull={setFull} portfolio={portfolio} setIsUpdated={setIsUpdated}/>
+      return <Analyze isUpdated= {isUpdated} layout={layout} setLayout={setLayout} full={full} setFull={setFull} portfolio={portfolio} setIsUpdated={setIsUpdated} report={report} setReport={setReport}/>
     case "Simulate":
       return <Simulate />
   }

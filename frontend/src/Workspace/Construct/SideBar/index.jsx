@@ -49,12 +49,12 @@ const Debt = ({cat, portfolio, setPortfolio}) => {
 const Bond = ({cat, portfolio, setPortfolio}) => {
   return (
   <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio)}>
-  <div className="label">Term</div>
-  <input name="Term" required/>
-  <div className="label">Quantity</div>
-  <input name="Quantity" required/>
-  <div className="label">Price</div>
-  <input name="Price" required/>
+  <div className="label">Par Value</div>
+  <input type="number" name="Par Value" required/>
+  <div className="label">Coupon</div>
+  <input type="number" name="Coupon" required/>
+  <div className="label">Maturity Date</div>
+  <input type="date" name="Maturity Date" required/>
   <input type={"submit"} value="Add" />
   </form>
 )}

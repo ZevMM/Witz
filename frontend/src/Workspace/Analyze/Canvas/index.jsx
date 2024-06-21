@@ -2,71 +2,30 @@ import React from 'react'
 import { useState } from "react"
 import './index.css'
 import RenderBarChart from './Charts/BarChart';
+import RenderLineChart from './Charts/LineChart.jsx';
+import RenderPieChart from './Charts/PieChart.jsx';
+import RenderAreaChart from './Charts/AreaChart.jsx';
 import {Widget1, Widget2, Widget3} from './Charts/Widget.jsx';
 
 import RGL, { WidthProvider } from "react-grid-layout";
-import { PieChart, Pie, LineChart, Line, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
-
-const data = [{name: 'Page A', uv: 400, pv: 2400, amt: 2400}, 
-{name: 'Page B', uv: 300, pv: 2400, amt: 2400},
-{name: 'Page C', uv: 300, pv: 2400, amt: 2400},
-{name: 'Page D', uv: 200, pv: 2400, amt: 2400},
-{name: 'Page E', uv: 278, pv: 2400, amt: 2400},
-{name: 'Page F', uv: 189, pv: 2400, amt: 2400}];
-
-const data01 = [
-  { name: 'Group A', value: 400 },
-  { name: 'Group B', value: 300 },
-  { name: 'Group C', value: 300 },
-  { name: 'Group D', value: 200 },
-];
-const data02 = [
-  { name: 'A1', value: 100 },
-  { name: 'A2', value: 300 },
-  { name: 'B1', value: 100 },
-  { name: 'B2', value: 80 },
-  { name: 'B3', value: 40 },
-  { name: 'B4', value: 30 },
-  { name: 'B5', value: 50 },
-  { name: 'C1', value: 100 },
-  { name: 'C2', value: 200 },
-  { name: 'D1', value: 150 },
-  { name: 'D2', value: 50 },
-];
-
-const RenderLineChart = () => {return (
-  <ResponsiveContainer width="100%" height="100%">
-  <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-    <Line type="monotone" dataKey="uv" stroke="#feb570ff" />
-    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-
-    <Tooltip />
-  </LineChart>
-  </ResponsiveContainer>
-);}
-
-const RenderPieChart = () => {return (
-  <ResponsiveContainer width="100%" height="100%">
-  <PieChart width="100%" height="100%">
-    <Pie data={data01} dataKey="value" cx="50%" cy="50%" outerRadius={"48%"} fill="#fe8070ff" />
-    <Pie data={data02} dataKey="value" cx="50%" cy="50%" innerRadius={"64%"} outerRadius={"83%"} fill="#7aa5e2ff" label />
-  </PieChart>
-  </ResponsiveContainer>
-);}
-
-const chartMap = {
-  "chart1" : <RenderLineChart />,
-  "chart2" : <RenderBarChart />,
-  "chart3" : <RenderPieChart />,
-  "chart4" : <Widget1 />,
-  "chart5" : <Widget2 />,
-  "chart6" : <Widget3 />
-}
 
 const ReactGridLayout = WidthProvider(RGL);
 
 
-const Canvas = ({layout, setLayout}) => {
+const Canvas = ({layout, setLayout, report}) => {
+    console.log("rendering canvas", report["data6"])
+    const chartMap = {
+      "chart1" : <RenderLineChart data={report["data1"]}/>,
+      "chart2" : <RenderBarChart data={report["data2"]}/>,
+      "chart3" : <RenderPieChart data={report["data3"]}/>,
+      "chart4" : <Widget1 data={report["data4"]}/>,
+      "chart5" : <Widget2 data={report["data5"]}/>,
+      "chart6" : <Widget3 data={report["data6"]}/>,
+      "chart7" : <RenderAreaChart/>,
+      "chart8" : <Widget3 data={report["data6"]}/>,
+      "chart9" : <Widget2 data={report["data5"]}/>
+    }
+
     return (
         <ReactGridLayout
           className="layout"

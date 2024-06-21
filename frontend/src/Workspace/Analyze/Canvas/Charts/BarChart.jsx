@@ -11,51 +11,12 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: -3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: -2000,
-    pv: -9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: -1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: -3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-const RenderBarChart = () => {return (
+const RenderBarChart = ({data}) => {return (
+  <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
+  <div style={{color: "black", padding:"10px", flex:"0", backgroundColor:"#f3f3f3ff", margin:"3px", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)"}}>
+   <span style={{color: "black", paddingRight:"10px"}}>⁝⁝</span> Value by Sector
+  </div>
+  <div style={{flex:"1", minHeight: 0}}>
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
         width={500}
@@ -64,20 +25,22 @@ const RenderBarChart = () => {return (
         stackOffset="sign"
         margin={{
           top: 5,
-          right: 30,
-          left: 20,
+          right: 5,
+          left: -10,
           bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
 
-        <YAxis />
+        <YAxis style={{fontSize:"small"}}/>
         <Tooltip />
         <ReferenceLine y={0} stroke="#000" />
-        <Bar dataKey="pv" fill="#7cdfd9ff" stackId="stack" />
-        <Bar dataKey="uv" fill="#bfee77ff" stackId="stack" />
+        <Bar dataKey="pv" fill="#d24c8499" stackId="stack" />
+        <Bar dataKey="uv" fill="#f5804a99" stackId="stack" />
       </BarChart>
     </ResponsiveContainer>
+    </div>
+    </div>
 );}
 
 export default RenderBarChart

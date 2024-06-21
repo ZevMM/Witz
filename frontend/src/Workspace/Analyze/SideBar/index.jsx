@@ -91,13 +91,23 @@ const Statistics = ({layout, setLayout, nums, setNums}) => {
   return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setNums(!nums)}>Statistics <span style={{fontSize: "larger"}}>+</span></div>
 }
 
-
+const Interactive = ({layout, setLayout, intrv, setIntrv}) => {
+  if (intrv) {
+    return (<>
+      <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setIntrv(!intrv)}>Interactive <span style={{fontSize: "larger"}}>-</span></div>
+      <ChartCheckbox id={"chart7"} name={"Should be table"} layout={layout} setLayout={setLayout} />
+      <ChartCheckbox id={"chart8"} name={"Should be table"} layout={layout} setLayout={setLayout} />
+      <ChartCheckbox id={"chart9"} name={"Should be table"} layout={layout} setLayout={setLayout} />
+      </>)
+  }
+  return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setIntrv(!intrv)}>Interactive <span style={{fontSize: "larger"}}>+</span></div>
+}
 
 function SideBar({type, layout, setLayout}) {
   console.log(layout)
   const [summary, setSummary] = useState(true)
   const [nums, setNums] = useState(true)
-  const [indiv, setIndiv] = useState(true)
+  const [intrv, setIntrv] = useState(true)
 
 
   if (type == 'Custom') {
@@ -108,6 +118,7 @@ function SideBar({type, layout, setLayout}) {
           
           <SummaryCharts layout={layout} setLayout={setLayout} summary={summary} setSummary={setSummary}/>
           <Statistics layout={layout} setLayout={setLayout} nums={nums} setNums={setNums} />
+          <Interactive layout={layout} setLayout={setLayout} intrv={intrv} setIntrv={setIntrv} />
 
       </div>
     )

@@ -2,15 +2,21 @@ import { useState, useEffect } from 'react'
 import './index.css'
 import SideBar from './SideBar'
 import Canvas from './Canvas'
+import axios from 'axios'
 
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
-function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsUpdated}) {
+function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsUpdated, report, setReport}) {
 
     useEffect(() => {
         if (!isUpdated) {
-            console.log("need to update")
-            setIsUpdated(true)
+            console.log("need to update");
+            axios
+            .post('http://localhost:3001/data', portfolio) //eventually needs to become post
+            .then(response => {
+                setReport(response.data)
+            })
+            setIsUpdated(true);
         } else {
             console.log("already updated")
         }
@@ -41,12 +47,12 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
                 <ActionElement text='Preset' handleClick={() => changeSide('Preset')}/>
                 <ActionElement text='Custom' handleClick={() => changeSide('Custom')}/>
                 <ActionElement text='Clear' handleClick={() => changeSide('Undo')}/>
-                <ActionElement text='Export' handleClick={() => changeSide('Redo')}/>
+                <ActionElement text='Export' handleClick={() => true}/>
                 </div>
                 <FullButton />
             </div>
             <div style={{overflowY:"auto", paddingBottom:"100px", height:"100%"}}>
-              <Canvas layout={layout} setLayout={setLayout}/>
+              <Canvas layout={layout} setLayout={setLayout} report={report}/>
             </div>
         </div>
         <SideBar type={side} layout={layout} setLayout={setLayout} />

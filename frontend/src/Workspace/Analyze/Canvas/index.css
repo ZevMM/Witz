@@ -1,5 +1,11 @@
 .chartBlock {
-    background-color: #efefefff;
     color: white;
-    border-radius: 5px
+    border-radius: 2px
+}
+
+.dot {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
 }
