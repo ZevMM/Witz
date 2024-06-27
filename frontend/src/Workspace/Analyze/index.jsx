@@ -12,7 +12,7 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
         if (!isUpdated) {
             console.log("need to update");
             axios
-            .post('http://localhost:3001/data', portfolio) //eventually needs to become post
+            .post('http://localhost:3001/data', portfolio)
             .then(response => {
                 setReport(response.data)
             })
@@ -52,7 +52,7 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
                 <FullButton />
             </div>
             <div style={{overflowY:"auto", paddingBottom:"100px", height:"100%"}}>
-              <Canvas layout={layout} setLayout={setLayout} report={report}/>
+              <Canvas layout={layout} setLayout={setLayout} report={report} portfolio={portfolio}/>
             </div>
         </div>
         <SideBar type={side} layout={layout} setLayout={setLayout} />

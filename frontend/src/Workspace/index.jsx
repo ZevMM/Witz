@@ -14,6 +14,8 @@ function Workspace({mode, full, setFull}) {
     { id: 4, title: "Cryptocurrency", data: [["Interest", "Principal", "Term"]], open: true}
   ])
 
+  const [localStorage, setLocalStorage] = useState(null) //TO-DO. add to when data is requested, reset when portfolio is updated
+
   const [report, setReport] = useState({
     data0 : null,
     data1 : null,

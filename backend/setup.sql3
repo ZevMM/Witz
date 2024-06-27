@@ -1,0 +1,4 @@
+.mode csv
+.seperator ","
+drop table if exists prices
+.import "asset-values.csv" prices

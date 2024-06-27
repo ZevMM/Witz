@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const sqlite3 = require('sqlite3').verbose();
+
 
 app.use(express.json())
 app.use(cors())
@@ -125,13 +127,31 @@ app.get('/', (request, response) => {
 })
 
 app.get('/data', (request, response) => {
+
   response.json(report)
 })
 
 app.post('/data', (request, response ) => {
   const portfolio = request.body
-  generateReport(portfolio)
+  
+  //generateReport(portfolio)
   response.json(report.data)
+})
+
+app.post('/totalvalue', (request, response) => {
+  const portfolio = request.body
+  let stocks = portfolio[0]["data"].slice(1)
+  let stockprices = null
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+      console.error("error", err.message);
+    }
+    db.get(`SELECT ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, row) {  
+        console.log("row", row)
+        response.json(Object.values(row).reduce((s, c) => s += c))
+    });
+  })
+
 })
 
 const PORT = 3001

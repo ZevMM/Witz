@@ -12,13 +12,13 @@ import RGL, { WidthProvider } from "react-grid-layout";
 const ReactGridLayout = WidthProvider(RGL);
 
 
-const Canvas = ({layout, setLayout, report}) => {
+const Canvas = ({layout, setLayout, report, portfolio}) => {
     console.log("rendering canvas", report["data6"])
     const chartMap = {
       "chart1" : <RenderLineChart data={report["data1"]}/>,
       "chart2" : <RenderBarChart data={report["data2"]}/>,
       "chart3" : <RenderPieChart data={report["data3"]}/>,
-      "chart4" : <Widget1 data={report["data4"]}/>,
+      "chart4" : <Widget1 portfolio={portfolio}/>,
       "chart5" : <Widget2 data={report["data5"]}/>,
       "chart6" : <Widget3 data={report["data6"]}/>,
       "chart7" : <RenderAreaChart/>,
