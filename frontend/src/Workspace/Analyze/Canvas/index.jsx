@@ -35,6 +35,7 @@ const Canvas = ({layout, setLayout, report, portfolio}) => {
           rowHeight={30}
           width={1500}
           onLayoutChange={(l) => setLayout(l)}
+          draggableHandle='.MyDragHandleClassName'
         >
           {layout.map(cb => {
             const id = cb.i

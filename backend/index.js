@@ -337,6 +337,20 @@ app.post('/valuepiechart', (request, response) => {
   })
 })
 
+app.post('/tstable', (request, response) => {
+  const portfolio = request.body
+  let stocks = portfolio[0]["data"].slice(1)
+  let db = new sqlite3.Database('asset-values', (err) => {
+    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+      let df = pl.DataFrame(rows)
+      let toReturn = df.toObject()
+      console.log(toReturn["Date"].slice(-10))
+
+      response.json(toReturn)
+    })
+  })
+})
+
 
 const PORT = 3001
 app.listen(PORT, () => {

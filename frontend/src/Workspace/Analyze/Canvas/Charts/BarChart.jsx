@@ -14,7 +14,7 @@ import {
 const RenderBarChart = ({data}) => {return (
   <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
   <div style={{color: "black", padding:"10px", flex:"0", backgroundColor:"#f3f3f3ff", margin:"3px", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)"}}>
-   <span style={{color: "black", paddingRight:"10px"}}>⁝⁝</span> Value by Sector
+   <span style={{color: "black", paddingRight:"10px"}} className="MyDragHandleClassName">⁝⁝</span> Value by Sector
   </div>
   <div style={{flex:"1", minHeight: 0}}>
     <ResponsiveContainer width="100%" height="100%">

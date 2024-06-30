@@ -18,7 +18,7 @@ const Widget1 = ({portfolio}) => {
     <div>
     
     <div style={{fontSize: "small", color:"black"}}>
-        <span style={{color: "black", marginRight:"2px"}}>⁝⁝</span> Total Value
+        <span style={{color: "black", marginRight:"2px"}} className="MyDragHandleClassName">⁝⁝</span> Total Value
 
         <select style={{marginLeft:"30px",  borderRadius:"0", border:"1px solid #666666", fontSize:"10px", color:"#666666"}} name="cars" id="cars">
             <option value="volvo">5-year</option>
@@ -48,7 +48,7 @@ const Widget2 = ({portfolio}) => {
     <div>
     
     <div style={{fontSize: "small", color:"black"}}>
-        <span style={{color: "black", marginRight:"2px"}}>⁝⁝</span> Volatility
+        <span style={{color: "black", marginRight:"2px"}} className="MyDragHandleClassName">⁝⁝</span> Volatility
 
         <select style={{marginLeft:"30px",  borderRadius:"0", border:"1px solid #666666", fontSize:"10px", color:"#666666"}} name="cars" id="cars">
             <option value="volvo">5-year</option>
@@ -78,7 +78,7 @@ const Widget3 = ({portfolio}) => {
     <div>
     
     <div style={{fontSize: "small", color:"black"}}>
-        <span style={{color: "black", marginRight:"2px"}}>⁝⁝</span> Diversification Ratio
+        <span style={{color: "black", marginRight:"2px"}} className="MyDragHandleClassName">⁝⁝</span> Diversification Ratio
 
         <select style={{marginLeft:"30px",  borderRadius:"0", border:"1px solid #666666", fontSize:"10px", color:"#666666"}} name="cars" id="cars">
             <option value="volvo">5-year</option>

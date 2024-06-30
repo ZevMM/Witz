@@ -23,7 +23,7 @@ const RenderAreaChart = ({portfolio}) => {
     return (
         <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
         <div style={{color: "black", padding:"10px", flex:"0", backgroundColor:"#f3f3f3ff", margin:"3px", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)"}}>
-         <span style={{color: "black", paddingRight:"10px"}}>⁝⁝</span> Value by Sector
+         <span style={{color: "black", paddingRight:"10px"}} className="MyDragHandleClassName">⁝⁝</span> Value by Sector
          
          <select style={{marginLeft:"30px", borderRadius:"0", border:"1px solid #666666", fontSize:"12px", color: "#666666"}} name="range" id="range" onChange={(e) => setTimespan(parseInt(e.target.value))}>
           <option value="-250">1Y</option>
