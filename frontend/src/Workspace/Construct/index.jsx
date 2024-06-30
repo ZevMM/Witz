@@ -57,7 +57,7 @@ function Construct({full, setFull, portfolio, setPortfolio}) {
 
     return (
       <div style={{display: "flex", height: "100%"}}>
-        <div style={{display: "flex", flex: 4, flexDirection: "column"}}>
+        <div style={{display: "flex", flex: "4 4", flexDirection: "column"}}>
             <div id="actionbar">
                 <div>
                 <ActionElement text='Add' handleClick={() => changeSide('Add')}/>

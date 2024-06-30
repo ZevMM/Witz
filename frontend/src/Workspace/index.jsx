@@ -8,7 +8,7 @@ import Construct from './Construct'
 function Workspace({mode, full, setFull}) {
 
   const [portfolio, setPortfolio] = useState([
-    { id: 1, title: "Stocks", data: [["Symbol", "Quantity", "Price"]], open: true},
+    { id: 1, title: "Stocks", data: [["Symbol", "Quantity", "Leverage"]], open: true},
     { id: 2, title: "Bonds", data: [["Term", "Quantity", "Price"]], open: true},
     { id: 3, title: "Debt", data: [["Interest", "Principal", "Term"]], open: true},
     { id: 4, title: "Cryptocurrency", data: [["Interest", "Principal", "Term"]], open: true}

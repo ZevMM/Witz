@@ -1,69 +1,37 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 
-const data = [
-    {
-      name: 'Page A',
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: 'Page B',
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: 'Page C',
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: 'Page D',
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: 'Page E',
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: 'Page F',
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: 'Page G',
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+const RenderAreaChart = ({portfolio}) => {
+  const [data, setData] = useState(null)
+  const [active, setActive] = useState(portfolio[0]["data"].slice(1))
+  const [timespan, setTimespan] = useState(-250)
 
+  useEffect(() => {
+    axios
+    .post('http://localhost:3001/areachart', portfolio)
+    .then(response => {
+        console.log(response.data)
+        setData(response.data.slice(timespan))
+    })
+    }, [timespan, active])
 
-const RenderAreaChart = () => {
+    const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
+    console.log(data)
+
     return (
         <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
         <div style={{color: "black", padding:"10px", flex:"0", backgroundColor:"#f3f3f3ff", margin:"3px", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)"}}>
          <span style={{color: "black", paddingRight:"10px"}}>⁝⁝</span> Value by Sector
-         <select style={{marginLeft:"30px", borderRadius:"0", border:"1px solid #666666", fontSize:"12px", color: "#666666"}} name="cars" id="cars">
-          <option value="volvo">Volvo</option>
-          <option value="saab">Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
-          </select>
-          <select style={{marginLeft:"30px", borderRadius:"0", border:"1px solid #666666", fontSize:"12px", color: "#666666"}} name="cars" id="cars">
-          <option value="volvo">Volvo</option>
-          <option value="saab">Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
-          </select>
+         
+         <select style={{marginLeft:"30px", borderRadius:"0", border:"1px solid #666666", fontSize:"12px", color: "#666666"}} name="range" id="range" onChange={(e) => setTimespan(parseInt(e.target.value))}>
+          <option value="-250">1Y</option>
+          <option value="-125">6M</option>
+          <option value="-60">3M</option>
+          <option value="-20">1M</option>
+        </select>
+
         </div>
 
         <div style={{flex:"1", minHeight: 0}}>
@@ -78,25 +46,18 @@ const RenderAreaChart = () => {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" style={{fontSize: "small"}}/>
+            <XAxis dataKey="date" fontSize={"small"} minTickGap={40} interval={"equidistantPreserveStart"}/>
             <YAxis style={{fontSize: "small"}}/>
             <Tooltip />
-            <Area type="monotone" dataKey="uv" stackId="1" stroke="#23438a" fill="#23438a" />
-            <Area type="monotone" dataKey="pv" stackId="1" stroke="#5d439c" fill="#5d439c" />
-            <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" />
+            {active.map((s, i) => <Area type="linear" dataKey={i} stackId="1" stroke={colors[i % colors.length]} fill={colors[i % colors.length]}/>)}
           </AreaChart>
         </ResponsiveContainer>
         </div>
 
         
         <div style={{color: "black", padding:"5px", flex:"0", display:"flex", justifyContent:"space-around", alignItems:"center", paddingLeft:"10%", paddingRight:"10%"}}>
-          <div><span class="dot" style={{backgroundColor:"#d24c84", marginRight:"5px"}}></span>Key</div>
-          <div><span class="dot" style={{backgroundColor:"#a4479f", marginRight:"5px"}}></span>Key</div>
-          <div><span class="dot" style={{backgroundColor:"#5d439c", marginRight:"5px"}}></span>Key</div>
-          <div><span class="dot" style={{backgroundColor:"#23438a", marginRight:"5px"}}></span>Key</div>
+          {active.map((s, i) => <div><span class="dot" style={{backgroundColor:colors[i % colors.length], marginRight:"5px"}}></span>{s[0]}</div>)}
         </div>
-
-
         </div>
       );
     }

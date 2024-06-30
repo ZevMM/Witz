@@ -54,7 +54,7 @@ const ChartCheckbox = ({id, name, layout, setLayout}) => {
   if (layout?.map(c => c.i).includes(id)) {
     return (
       <div style={{ display: "inline-block", width: "75%", marginBottom: "5px", color: "#666666"}}>
-      <input type="checkbox" id={id} name={id} onClick={(e) => toggleCharts(e.target.checked, e.target.name, layout, setLayout)} checked/>
+      <input type="checkbox" id={id} name={id} onChange={(e) => toggleCharts(e.target.checked, e.target.name, layout, setLayout)} checked/>
       <label htmlFor={id} style={{marginLeft: "5px"}}>{name}</label>
       </div>
     )
@@ -70,22 +70,23 @@ const ChartCheckbox = ({id, name, layout, setLayout}) => {
 const SummaryCharts = ({layout, setLayout, summary, setSummary}) => {
   if (summary) {
     return (<>
-      <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setSummary(!summary)}>Summary Charts <span style={{fontSize: "larger"}}>-</span></div>
+      <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setSummary(!summary)}>Charts <span style={{fontSize: "larger"}}>-</span></div>
       <ChartCheckbox id={"chart1"} name={"Current value pie-chart"} layout={layout} setLayout={setLayout} />
-      <ChartCheckbox id={"chart2"} name={"Principal value pie-chart"} layout={layout} setLayout={setLayout} />
+      <ChartCheckbox id={"chart2"} name={"Key Insights"} layout={layout} setLayout={setLayout} />
       <ChartCheckbox id={"chart3"} name={"Risk pie-chart"} layout={layout} setLayout={setLayout} />
       </>)
   }
-  return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setSummary(!summary)}>Summary Charts <span style={{fontSize: "larger"}}>+</span> </div>
+  return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setSummary(!summary)}>Charts <span style={{fontSize: "larger"}}>+</span> </div>
 }
-
+//add historic returns
+//make "insights" it's own category
 const Statistics = ({layout, setLayout, nums, setNums}) => {
   if (nums) {
     return (<>
       <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setNums(!nums)}>Statistics <span style={{fontSize: "larger"}}>-</span></div>
       <ChartCheckbox id={"chart4"} name={"Total Value"} layout={layout} setLayout={setLayout} />
-      <ChartCheckbox id={"chart5"} name={"Initial Investment"} layout={layout} setLayout={setLayout} />
-      <ChartCheckbox id={"chart6"} name={"Historic return"} layout={layout} setLayout={setLayout} />
+      <ChartCheckbox id={"chart5"} name={"Volatility"} layout={layout} setLayout={setLayout} />
+      <ChartCheckbox id={"chart6"} name={"Diversification Ratio"} layout={layout} setLayout={setLayout} />
       </>)
   }
   return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setNums(!nums)}>Statistics <span style={{fontSize: "larger"}}>+</span></div>
@@ -94,13 +95,13 @@ const Statistics = ({layout, setLayout, nums, setNums}) => {
 const Interactive = ({layout, setLayout, intrv, setIntrv}) => {
   if (intrv) {
     return (<>
-      <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setIntrv(!intrv)}>Interactive <span style={{fontSize: "larger"}}>-</span></div>
-      <ChartCheckbox id={"chart7"} name={"Should be table"} layout={layout} setLayout={setLayout} />
-      <ChartCheckbox id={"chart8"} name={"Should be table"} layout={layout} setLayout={setLayout} />
+      <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setIntrv(!intrv)}>Tables <span style={{fontSize: "larger"}}>-</span></div>
+      <ChartCheckbox id={"chart7"} name={"Time-Series Table"} layout={layout} setLayout={setLayout} />
+      <ChartCheckbox id={"chart8"} name={"Stats Table"} layout={layout} setLayout={setLayout} />
       <ChartCheckbox id={"chart9"} name={"Should be table"} layout={layout} setLayout={setLayout} />
       </>)
   }
-  return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setIntrv(!intrv)}>Interactive <span style={{fontSize: "larger"}}>+</span></div>
+  return <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}} onClick={() => setIntrv(!intrv)}>Tables <span style={{fontSize: "larger"}}>+</span></div>
 }
 
 function SideBar({type, layout, setLayout}) {

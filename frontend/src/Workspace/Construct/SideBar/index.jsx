@@ -27,7 +27,7 @@ const Stock = ({cat, portfolio, setPortfolio}) => {
   <input name="Symbol" required/>
   <div className="label">Quantity</div>
   <input name="Quantity" required/>
-  <div className="label">Price</div>
+  <div className="label">Leverage</div>
   <input name="Price" required/>
   <input type={"submit"} value="Add" />
   </form>

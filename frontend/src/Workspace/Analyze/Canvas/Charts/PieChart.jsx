@@ -1,9 +1,25 @@
 import { PieChart, Pie, ResponsiveContainer, Tooltip } from 'recharts';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 
+const RenderPieChart = ({portfolio}) => {
+  const [data, setData] = useState(null)
+  
+  useEffect(() => {
+    axios
+    .post('http://localhost:3001/valuepiechart', portfolio)
+    .then(response => {
+        console.log(response.data)
+        setData(response.data)
+    })
+    }, [])
+  
+  if (!data) {
+    return (<div>Loading...</div>)
+  }
 
-
-const RenderPieChart = ({data}) => {return (
+  return (
 
   <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
   <div style={{color: "black", padding:"10px", flex:"0", margin:"3px", backgroundColor:"#f3f3f3ff", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)"}}>

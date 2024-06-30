@@ -6,6 +6,7 @@ import RenderLineChart from './Charts/LineChart.jsx';
 import RenderPieChart from './Charts/PieChart.jsx';
 import RenderAreaChart from './Charts/AreaChart.jsx';
 import {Widget1, Widget2, Widget3} from './Charts/Widget.jsx';
+import StatTable from './Charts/StatTable.jsx';
 
 import RGL, { WidthProvider } from "react-grid-layout";
 
@@ -17,12 +18,12 @@ const Canvas = ({layout, setLayout, report, portfolio}) => {
     const chartMap = {
       "chart1" : <RenderLineChart data={report["data1"]}/>,
       "chart2" : <RenderBarChart data={report["data2"]}/>,
-      "chart3" : <RenderPieChart data={report["data3"]}/>,
+      "chart3" : <RenderPieChart portfolio={portfolio}/>,
       "chart4" : <Widget1 portfolio={portfolio}/>,
-      "chart5" : <Widget2 data={report["data5"]}/>,
-      "chart6" : <Widget3 data={report["data6"]}/>,
-      "chart7" : <RenderAreaChart/>,
-      "chart8" : <Widget3 data={report["data6"]}/>,
+      "chart5" : <Widget2 portfolio={portfolio}/>,
+      "chart6" : <Widget3 portfolio={portfolio}/>,
+      "chart7" : <RenderAreaChart portfolio={portfolio}/>,
+      "chart8" : <StatTable portfolio={portfolio}/>,
       "chart9" : <Widget2 data={report["data5"]}/>
     }
 
