@@ -1,6 +1,26 @@
 import { LineChart, Line, CartesianGrid, ResponsiveContainer, Tooltip, YAxis, XAxis } from 'recharts';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
-const RenderLineChart = ({data}) => {return (
+
+const RenderLineChart = ({portfolio}) => {
+  const [data, setData] = useState(null)
+  const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
+
+  useEffect(() => {
+    axios
+    .post('http://localhost:3001/linegraph', portfolio)
+    .then((response) => {
+      console.log(response.data)
+      setData(response.data)
+    })
+  }, [])
+
+  if (!data) {
+    return
+  }
+
+  return (
   <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
   <div style={{color: "black", padding:"10px", flex:"0", backgroundColor:"#f3f3f3ff", margin:"3px", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)"}}>
    <span style={{color: "black", paddingRight:"10px"}} className="MyDragHandleClassName">⁝⁝</span> Value by Sector
@@ -14,8 +34,10 @@ const RenderLineChart = ({data}) => {return (
   <div style={{flex:"1", minHeight: 0}}>
     <ResponsiveContainer width="100%" height="100%">
     <LineChart data={data} margin={{ top: 0, right: 5, bottom: 0, left: -10 }}>
-      <Line type="monotone" dataKey="uv" stroke="#feb570ff" />
-      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+      {portfolio[0]["data"].slice(1).map((s, i)=> <Line type="linear" dataKey={i} stroke={colors[i % colors.length]} dot={false}/>)}
+      
+      <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
+      <XAxis dataKey="date" fontSize={"small"} minTickGap={40} interval={"equidistantPreserveStart"}/>
       <YAxis style={{fontSize:"small"}}/>
 
       <Tooltip />

@@ -4,6 +4,7 @@ const cors = require('cors')
 const sqlite3 = require('sqlite3').verbose();
 const pl = require('nodejs-polars'); 
 const axios = require('axios');
+const math = require('mathjs')
 
 
 app.use(express.json())
@@ -272,6 +273,8 @@ app.post('/diversificationratio', (request, response) => {
 })
 
 
+
+
 function convertDateFormat(dateString) {
   // Split the input date string
   const [year, month, day] = dateString.split('-');
@@ -337,6 +340,51 @@ app.post('/valuepiechart', (request, response) => {
   })
 })
 
+app.post('/riskpiechart', (request, response) => {
+    
+  const portfolio = request.body
+  let stocks = portfolio[0]["data"].slice(1)
+  if (stocks.length < 2) {
+    response.json({"message" : "Need > 1 asset"})
+    return
+  }
+
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+      console.error("error", err.message);
+    }
+    db.all(`SELECT ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+      let df = pl.DataFrame(rows)
+
+      let returns = stocks.map(s => {
+        return ({
+          "assetReturns" : df[s[0]].sub(df[s[0]][0]).cast(pl.Float32).toArray()
+        })
+      })
+
+      let covreq = {
+        "assets": returns
+      }
+
+
+      axios
+      .post('https://api.portfoliooptimizer.io/v1/assets/covariance/matrix', covreq)
+      .then(r => {
+        let E = math.matrix(r.data["assetsCovarianceMatrix"])
+        let total = stocks.reduce((sum, s) => sum += (df[s[0]][-1] * s[1]), 0)
+        let weights = stocks.map(s => df[s[0]][-1] * s[1] / total)
+        const covXw = math.multiply(weights, E)["_data"]
+        let Rtotal = weights.map((w, i) => w * covXw[i]).reduce((s, c) => s + c)
+        let pcts = weights.map((w, i) => {return {"name" : stocks[i][0], "value": w * covXw[i] * 100 / Rtotal}} )
+        response.json(pcts)
+
+
+
+      })
+    });
+  })
+})
+
 app.post('/tstable', (request, response) => {
   const portfolio = request.body
   let stocks = portfolio[0]["data"].slice(1)
@@ -344,13 +392,37 @@ app.post('/tstable', (request, response) => {
     db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
       let df = pl.DataFrame(rows)
       let toReturn = df.toObject()
-      console.log(toReturn["Date"].slice(-10))
 
       response.json(toReturn)
     })
   })
 })
 
+
+app.post('/linegraph', (request, response) => {
+  //do I want to scale relative to average or do pct change?
+  const portfolio = request.body
+  let stocks = portfolio[0]["data"].slice(1)
+  let db = new sqlite3.Database('asset-values', (err) => {
+    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+      let df = pl.DataFrame(rows)
+      let toReturn = []
+      let avgs = []
+      df.columns.slice(1).forEach((c) => avgs.push(df[c].toArray().reduce((s,c) => s + c) / df[c].length))
+      df.rows().forEach((row) => {
+        let shortdate = convertDateFormat(row[0])
+        row = row.slice(1).map((r, i) => r / avgs[i])
+        let entry = {
+          "date": shortdate,
+          ...row
+        }
+        console.log(entry)
+        toReturn.push(entry)
+      })
+      response.json(toReturn)
+    })
+  })
+})
 
 const PORT = 3001
 app.listen(PORT, () => {

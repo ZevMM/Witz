@@ -6,7 +6,7 @@ import axios from 'axios'
 const CheckboxDropdown = ({all, assets, setAssets}) => {
     
     return(
-    <div style={{position:"absolute", top:"30px", background:"white", width:"65px", borderRadius:"15%", boxShadow:"0px 5px 5px #888"}}>
+    <div style={{position:"absolute", top:"20px", background:"white", width:"100%", borderRadius:"10px", boxShadow:"0px 5px 5px #888"}}>
         <div style={{maxHeight:"150px", overflowY:"auto", fontSize: "12px", color:"#666666", display:"flex", flexDirection:"column"}}>
         {
             all.map(a => {
@@ -48,7 +48,7 @@ const AssetSelect = ({portfolio, assets, setAssets, filter, setFilter}) => {
     let toShow = portfolio[0]["data"].slice(1).filter(a => a[0].includes(filter))
  
     return (
-    <div style={{display:"flex", alignItems:"center", marginLeft:"30px", height:"20px"}}
+    <div style={{position:"relative", display:"flex", alignItems:"center", marginLeft:"30px", height:"20px"}}
     onFocus={() => {
         setFilter("")
         setActive(true)

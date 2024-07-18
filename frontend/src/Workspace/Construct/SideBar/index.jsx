@@ -20,15 +20,44 @@ const getTaskPos = (id, portfolio) => {
   return portfolio.findIndex(element => element.id == id)
 }
 
+const Dropdown = ({options, setFilter, setDrop}) => {
+
+  return (<div style={{position: "absolute", background:"white", padding:"3px", width:"100%", overflowY:"auto", maxHeight:"150px", fontFamily: "Nunito", fontSize:"small", borderRadius:"10px", boxShadow:"0 5px 5px 0 lightgrey"}} >
+    {options.map(o => <div className="addTicker" onClick={() => {setFilter(o)
+      setDrop(false)
+    }}>{o}</div>)}
+  </div>)
+}
+
 const Stock = ({cat, portfolio, setPortfolio}) => {
+  const [filter, setFilter] = useState("")
+  const [drop, setDrop] = useState(false)
+  const all = ["AAPL", "GOOG", "META", "MSFT", "NVDA", "AMZN", "TSLA"]
+  let options = all.filter(a => a.includes(filter))
+
+  if (options.length === 1 && filter !== options[0]) {
+    setFilter(options[0])
+    setDrop(false)
+  }
+
   return (
   <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio)}>
-  <div className="label">Symbol</div>
-  <input name="Symbol" required/>
+  <div className="label" >Symbol</div>
+  <div onFocus={() => setDrop(true)}
+  onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          console.log(e.currentTarget, e.relatedTarget)
+          setDrop(false)
+        }
+        }} tabindex="-1"
+      style={{position:"relative"}}>
+  <input name="Symbol" id="Symbol" value={filter} onChange={(e) => setFilter(e.target.value)} autoComplete='off'/>
+  {drop? <Dropdown options={options} setFilter={setFilter} setDrop={setDrop}/> : null}
+  </div>
   <div className="label">Quantity</div>
-  <input name="Quantity" required/>
+  <input type="number" name="Quantity"  autoComplete='off' required/>
   <div className="label">Leverage</div>
-  <input name="Price" required/>
+  <input type="number" name="Price"  autoComplete='off' required/>
   <input type={"submit"} value="Add" />
   </form>
 )}

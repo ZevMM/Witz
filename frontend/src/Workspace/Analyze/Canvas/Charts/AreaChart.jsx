@@ -18,7 +18,7 @@ const RenderAreaChart = ({portfolio}) => {
     }, [timespan, active])
 
     const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
-    console.log(data)
+
 
     return (
         <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
