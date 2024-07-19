@@ -15,7 +15,6 @@ const ReactGridLayout = WidthProvider(RGL);
 
 
 const Canvas = ({layout, setLayout, report, portfolio}) => {
-    console.log("rendering canvas", report["data6"])
     const chartMap = {
       "chart1" : <RenderLineChart portfolio={portfolio}/>,
       "chart2" : <RenderBarChart data={report["data2"]}/>,

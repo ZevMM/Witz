@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import './index.css'
 import Analyze from './Analyze'
-import Visualize from './Visualize'
 import Simulate from './Simulate'
 import Construct from './Construct'
 
@@ -39,7 +38,7 @@ function Workspace({mode, full, setFull}) {
     case "Analyze":
       return <Analyze isUpdated= {isUpdated} layout={layout} setLayout={setLayout} full={full} setFull={setFull} portfolio={portfolio} setIsUpdated={setIsUpdated} report={report} setReport={setReport}/>
     case "Simulate":
-      return <Simulate />
+      return <Simulate full={full} setFull={setFull} report={report}/>
   }
 }
 

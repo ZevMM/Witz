@@ -10,7 +10,6 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
 
     useEffect(() => {
         if (!isUpdated) {
-            console.log("need to update");
             axios
             .post('http://localhost:3001/data', portfolio)
             .then(response => {
@@ -18,7 +17,6 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
             })
             setIsUpdated(true);
         } else {
-            console.log("already updated")
         }
     }, [])
 

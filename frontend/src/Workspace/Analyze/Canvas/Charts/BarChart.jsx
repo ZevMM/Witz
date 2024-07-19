@@ -16,7 +16,6 @@ import RGL, { WidthProvider } from "react-grid-layout";
 const ReactGridLayout = WidthProvider(RGL);
 
 const handleRangeChange = (e, setRange, all, setLayout) => {
-  console.log(e)
   const min = e.startIndex
   const max = e.endIndex
   setRange((max - min + 1))

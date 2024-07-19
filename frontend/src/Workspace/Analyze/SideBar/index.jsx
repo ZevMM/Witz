@@ -15,14 +15,12 @@ const toggleCharts = (isOn, name, layout, setLayout) => {
   } else {
     setLayout(layout.filter(c => c.i !== name))
   }
-  console.log(layout)
 }
 
 const PresetCheckbox = ({view, name, id, setLayout}) => {
   return (
     <div style={{ display: "inline-block", width: "75%", marginBottom: "5px"}}>
     <input type="radio" id={id} name="analysis_preset" onClick={(e) => {
-      console.log(view)
       setLayout(view)}} 
     />
     <label htmlFor={id}>{name}</label>
@@ -105,7 +103,6 @@ const Interactive = ({layout, setLayout, intrv, setIntrv}) => {
 }
 
 function SideBar({type, layout, setLayout}) {
-  console.log(layout)
   const [summary, setSummary] = useState(true)
   const [nums, setNums] = useState(true)
   const [intrv, setIntrv] = useState(true)
