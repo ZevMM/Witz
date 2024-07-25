@@ -5,6 +5,7 @@ const sqlite3 = require('sqlite3').verbose();
 const pl = require('nodejs-polars'); 
 const axios = require('axios');
 const math = require('mathjs')
+const sim = require('./sim.js')
 
 
 app.use(express.json())
@@ -419,6 +420,77 @@ app.post('/linegraph', (request, response) => {
         console.log(entry)
         toReturn.push(entry)
       })
+      response.json(toReturn)
+    })
+  })
+})
+
+
+app.post('/simulate', (request, response) => {
+  let toReturn = []
+
+  const asc = arr => arr.sort((a, b) => a - b);
+
+  const sum = arr => arr.reduce((a, b) => a + b, 0);
+
+  const mean = arr => sum(arr) / arr.length;
+
+  const quantile = (arr, q) => {
+    const sorted = asc(arr);
+    const pos = (sorted.length - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (sorted[base + 1] !== undefined) {
+        return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    } else {
+        return sorted[base];
+    }
+  };
+
+
+  const portfolio = request.body.portfolio
+  const names = request.body.names
+  const events = request.body.events
+  let stocks = portfolio[0]["data"].slice(1)
+  let db = new sqlite3.Database('asset-values', (err) => {
+    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")}, "GOOG", "AMZN", "MSFT" FROM stockprices`, function(err, rows) {  
+      let df = pl.DataFrame(rows)
+      let drifts = []
+      let vols = []
+      let starts = []
+      let allLogReturns = []
+      
+      df.columns.slice(1).forEach(
+        col => {
+          let logReturns = [];
+          col = df[col].toArray()
+          for (let i = 1; i < col.length; i++) {
+            let rt = Math.log(col[i] / col[i - 1]);
+            logReturns.push(rt);
+          }
+          drifts.push(math.mean(logReturns))
+          vols.push(math.std(logReturns))
+          starts.push(col[0])
+          allLogReturns.push(logReturns)
+        }
+      )
+      let covMatrix = new Array(drifts.length).fill(0).map(() => new Array(drifts.length).fill(1))
+      for (let i = 1; i < drifts.length; i++){
+        for (let n = 0; n < i; n++) {
+          let cov = allLogReturns[i].reduce((sum, val, indx) => sum + (val - drifts[i]) * (allLogReturns[n][indx] - drifts[n]), 0) / (allLogReturns[i].length - 1)
+          covMatrix[i][n] = cov 
+          covMatrix[n][i] = cov
+        }
+      }
+      let numsims = 1
+      simData = sim.GBM(drifts, vols, numsims, stocks.length, 50, starts, covMatrix, names.length, events)
+      for (let i = 0; i < 50; i++){
+        let entry = {"date": i}
+        for (let n = 0; n < stocks.length; n++){
+          entry[stocks[n][0]] = simData[n][i].reduce((s,c) => s+c) / numsims
+        }
+        toReturn.push(entry)
+      }
       response.json(toReturn)
     })
   })

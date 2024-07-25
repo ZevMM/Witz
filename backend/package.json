@@ -19,6 +19,7 @@
     "fs": "^0.0.1-security",
     "mathjs": "^13.0.1",
     "nodejs-polars": "^0.13.0",
+    "random-normal": "^1.0.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
