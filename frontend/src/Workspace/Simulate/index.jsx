@@ -6,13 +6,24 @@ import Canvas from './Canvas'
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
 function Simulate({full, setFull, report, portfolio, setPortfolio}) {
-    const [all, setAll] = useState([
+    const [pall, setPall] = useState([
         {x: 0, y: 0, w:1, h:1, i:"block0"},
         {x: 1, y: 0, w:1, h:1, i:"block1"},
         {x: 2, y: 0, w:1, h:1, i:"block2"}
     ])
 
-    const [events, setEvents] = useState({"block0": {subj:"S&P", pct:60.05},
+    const [pevents, setPevents] = useState({"block0": {asset:"AAPL", quantity:50, side:"sell", type: "limit", limit: {price:180, exp: 12}},
+        "block1": {asset:"AAPL", quantity:50, side:"sell", type: "limit", limit: {price:180, exp: 12}},
+        "block2": {asset:"AAPL", quantity:50, side:"sell", type: "limit", limit: {price:180, exp: 12}}
+        })
+
+    const [mall, setMall] = useState([
+        {x: 0, y: 0, w:1, h:1, i:"block0"},
+        {x: 1, y: 0, w:1, h:1, i:"block1"},
+        {x: 2, y: 0, w:1, h:1, i:"block2"}
+    ])
+
+    const [mevents, setMevents] = useState({"block0": {subj:"S&P", pct:60.05},
     "block1": {subj:"Oil", pct:60.02},
     "block2": {subj:"USD", pct:-50.00}
     })
@@ -55,10 +66,10 @@ function Simulate({full, setFull, report, portfolio, setPortfolio}) {
                 </div>
                 <FullButton />
             </div>
-            <Canvas data={simData} numSteps={numSteps} all={all} setAll={setAll} events={events} setEvents={setEvents}/>
+            <Canvas data={simData} numSteps={numSteps} mall={mall} setMall={setMall} mevents={mevents} setMevents={setMevents} pall={pall} setPall={setPall} pevents={pevents} setPevents={setPevents}/>
         </div>
         
-        <SideBar type={side} portfolio={portfolio} setSimData={setSimData} all={all} events={events}/>
+        <SideBar type={side} portfolio={portfolio} setSimData={setSimData} pall={pall} pevents={pevents} mall={mall} mevents={mevents} setMevents={setMevents} setPevents={setPevents}/>
       </div>
   )
 }

@@ -12,23 +12,37 @@ import {
 import './index.css'
 import { useState } from 'react';
 import RGL, { WidthProvider } from "react-grid-layout";
-"remember to handle case of clicking on elements when not in focus. Maybe just have it be on hover?"
+
 const ReactGridLayout = WidthProvider(RGL);
 
-const Open = (e, setRange, all, setLayout) => {
+const Open = (e, setRange, pall, setLayout) => {
   const min = e.startIndex
   const max = e.endIndex
   setRange(e)
-  setLayout(all.filter(ele => ele.x >= min & ele.x <= max))
+  setLayout(pall.filter(ele => ele.x >= min & ele.x <= max).map(ele => {
+    let copy = {...ele}
+    copy.x -= min
+    return copy
+  }))
 }
 
-const handleRangeChange = (e, range, setRange, all, setLayout) => {
+const handleRangeChange = (e, range, setRange, pall, setLayout, mall, setMlayout) => {
   if (range.startIndex === e.startIndex & range.endIndex === e.endIndex) {return}
+  
   const min = e.startIndex
   const max = e.endIndex
   setRange(e)
-  let newl = all.filter(ele => ele.x >= min & ele.x <= max)
+  let newl = pall.filter(ele => ele.x >= min & ele.x <= max).map(ele => {
+    let copy = {...ele}
+    copy.x -= min
+    return copy
+  })
   CollapseNOUA(newl, setLayout)
+  setMlayout(mall.filter(ele => ele.x >= min & ele.x <= max).map(ele => {
+    let copy = {...ele}
+    copy.x -= min
+    return copy
+  }))
 }
 
 const CollapseNOUA = (layout, setLayout) => {
@@ -44,13 +58,13 @@ const CollapseNOUA = (layout, setLayout) => {
   
   let newlayout = []
   for (let [key, value] of Object.entries(byx)) {
-    value.length > 1 ? newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`mul${key}`}) : newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`sng${key}`})
+    value.length > 1 ? newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`mul${key}`, static:true}) : newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`sng${key}`, static:true})
   }
   setLayout(newlayout)
 }
 
-const Collapse = (layout, setLayout, all, range, setAll) => {
-  updateAll(layout, all, range, setAll)
+const Collapse = (layout, setLayout, pall, range, setPall) => {
+  updateAll(layout, pall, range, setPall)
   let byx = {}
   layout.forEach(element => {
     const xValue = element.x;
@@ -63,23 +77,40 @@ const Collapse = (layout, setLayout, all, range, setAll) => {
   
   let newlayout = []
   for (let [key, value] of Object.entries(byx)) {
-    value.length > 1 ? newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`mul${key}`}) : newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`sng${key}`})
+    value.length > 1 ? newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`mul${key}`, static:true}) : newlayout.push({x: parseInt(key), y: 0, w:1, h:1, i:`sng${key}`, static:true})
   }
   setLayout(newlayout)
 }
 
-const updateAll = (l, all, range, setAll) => {
+const updateAll = (l, pall, range, setPall) => {
+  
   const min = range.startIndex
   const max = range.endIndex
-  setAll(all.filter(ele => ele.x < min & ele.x > max).concat(l)) 
+  let adjusted = l.map(ele=> {
+    let copy = {...ele}
+    copy.x += min
+    return copy
+  })
+  let newl = pall.filter(ele => ele.x < min | ele.x > max).concat(adjusted)
+  setPall(newl) 
 }
 
-const Canvas = ({data, numSteps, all, setAll}) => {
+const Mcollapse = (mlayout, mall, range, setMall, setMlayout) => {
+  console.log("collapsing", mlayout)
+  updateAll(mlayout, mall, range, setMall)
+  let newl = mlayout.map(ele => {
+    let copy = {...ele}
+    copy.y = 0
+    return copy
+  })
+  setMlayout(newl)
+}
+
+const Canvas = ({data, numSteps, pall, setPall, mall, setMall}) => {
 
   const [range, setRange] = useState({startIndex: 0, endIndex: numSteps})
-
-
-  const [layout, setLayout] = useState([...all])
+  const [layout, setLayout] = useState([...pall])
+  const [mlayout, setMlayout] = useState([...mall])
 
   return (
   <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
@@ -105,27 +136,42 @@ const Canvas = ({data, numSteps, all, setAll}) => {
         <YAxis style={{fontSize:"small"}}/>
         <Tooltip />
         <ReferenceLine y={0} stroke="#000" />
-        <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, all, setLayout, setAll)}/>
+        <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, pall, setLayout, mall, setMlayout, setMall)}/>
       </LineChart>
     </ResponsiveContainer>
 
   </div>
-  <div style={{height:"20%"}} onFocus={() => Open(range, setRange, all, setLayout)} onBlur={() => Collapse(layout, setLayout, all, range, setAll)} tabIndex={-1}>
+  <div style={{margin:"5px"}} onFocus={() => Open(range, setRange, pall, setLayout)} onBlur={() => Collapse(layout, setLayout, pall, range, setPall)} tabIndex={-1}>
       <ReactGridLayout
             className="layout"
             layout= {layout}
-            
+            isResizable = {false}
             cols={(range.endIndex - range.startIndex + 1)}
             rowHeight={25}
-            width={15}
-            onLayoutChange={(l) => {setLayout(l)
-              console.log("all",all)
-            }}
+            onLayoutChange={(l) => {setLayout(l)}}
             style={{background:"#434343ff"}}
           >
             {layout.map(cb => {
               const id = cb.i
               return(<div className={id.includes("mul") ? "mul" : "sng"} key={id}></div>)
+          })}
+      </ReactGridLayout>
+    </div>
+
+    <div style={{margin:"5px"}} onFocus={() => Open(range, setRange, mall, setMlayout)} onBlur={() => Mcollapse(mlayout, mall, range, setMall, setMlayout)} tabIndex={-1}>
+      <ReactGridLayout
+            className="layout"
+            layout= {mlayout}
+            allowOverlap = {true}
+            cols={(range.endIndex - range.startIndex + 1)}
+            rowHeight={25}
+            onLayoutChange={(l) => {setMlayout(l)
+            }}
+            style={{background:"#434343ff"}}
+          >
+            {mlayout.map(cb => {
+              const id = cb.i
+              return(<div className="macro_up" key={id}></div>)
           })}
       </ReactGridLayout>
     </div>

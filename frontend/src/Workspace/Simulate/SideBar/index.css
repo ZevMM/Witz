@@ -11,3 +11,28 @@
     font-family: Georgia;
     padding-top: 15px;
 }
+
+.label {
+    font-family: "Nunito", sans-serif;
+    font-size: small;
+    color: #666666;
+    margin-bottom: -5px;
+    
+}
+
+.sim label {
+    font-family: "Nunito", sans-serif;
+    font-size: medium;
+    color: black;
+    margin-left: 5px
+}
+
+.sim input,
+.sim select {
+    background-color: transparent;
+    border: 1px solid #666666;
+    margin: 5px 0px;
+    width: 100%;
+   
+    font-family: "Nunito", sans-serif;
+}

@@ -58,23 +58,87 @@ const runSim = (setSimData, portfolio, all, events) => {
   })
 }
 
-function SideBar({type, portfolio, setSimData, all, events}) {
+const limToggle = (lim) => {
+  if (lim) {
+    return (<div>
+      <div className="label">Price</div>
+      <input type="number" />
+      <div className="label">Expiration (days until)</div>
+      <input type="number" />
+    </div>)
+  }
+}
+
+const addMevent = (e) => {
+  e.preventDefault
+  console.log(e.target.value)
+
+}
+
+function SideBar({type, portfolio, setSimData, pall, pevents, mall, mevents, setPall, setMall, setPevents, setMevents}) {
   const [cat, setCat] = useState("1")
+  const [lim, setLim] = useState(false)
+  console.log("mall",mall)
   switch (type) {
     case "Add":
       return (
         <div id="simsidebar" className="sim">
-          <h3>Add Holding</h3>
+          <h3>Add Event</h3>
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
+          <div style={{ fontFamily:"Nunito"}}>Macro Event</div>
           <form style={{width: "75%"}}>
-            <div className="label">Category</div>
+            <div className="label">Index</div>
             <select onChange={(e) => setCat(e.target.value)}>
               <option value="1">Stock</option>
               <option value="2">Bond</option>
               <option value="3">Debt</option>
             </select>
+            <div className="label">Percent Change</div>
+            <input type="number" />
+            <input type="submit" value="Add" onClick={(e) => addMevent(e)}/>
           </form>
+
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
+
+          <div style={{ fontFamily:"Nunito"}}>Portfolio Event</div>
+          <form style={{width: "75%"}}>
+            <div className="label">Asset</div>
+            <select onChange={(e) => setCat(e.target.value)}>
+              <option value="1">Stock</option>
+              <option value="2">Bond</option>
+              <option value="3">Debt</option>
+            </select>
+            <div className="label">Quantity</div>
+            <input type="number" />
+
+            <div className="label">Side</div>
+            <div style={{display:"flex", flexDirection:"row", justifyContent:"start"}}>
+              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
+                <input type="radio" id="buy" name="side" value="buy" />
+                <label for="buy">Buy</label>
+              </div>
+              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
+                <input type="radio" id="sell" name="side" value="sell" />
+                <label for="sell">Sell</label>
+              </div>
+            </div>
+
+            <div className="label">Type</div>
+            <div style={{display:"flex", flexDirection:"row", justifyContent:"start"}}>
+              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
+                <input type="radio" id="market" name="type" value="market" onClick={()=>setLim(false)}/>
+                <label for="market">Market</label>
+              </div>
+              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
+                <input type="radio" id="limit" name="type" value="limit" onClick={()=>setLim(true)}/>
+                <label for="limit">Limit</label>
+              </div>
+            </div>
+              {limToggle(lim)}
+
+            <input type="submit" value="Add"/>
+          </form>
+          
         </div>
       )
     case "Control":
@@ -89,7 +153,7 @@ function SideBar({type, portfolio, setSimData, all, events}) {
           <input type="number" name="Step" required/>
           <input type={"submit"} value="Set" />
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
-          <button onClick={() => runSim(setSimData, portfolio, all, events)}>Run</button>
+          <button onClick={() => runSim(setSimData, portfolio, mall, mevents)}>Run</button>
       </div>)
   }
 }
