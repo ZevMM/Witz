@@ -1,6 +1,8 @@
 import {
     LineChart,
     Line,
+    AreaChart,
+    Area,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -19,26 +21,20 @@ const Open = (e, setRange, pall, setLayout) => {
   const min = e.startIndex
   const max = e.endIndex
   setRange(e)
-  setLayout(pall.filter(ele => ele.x >= min & ele.x <= max).map(ele => {
+  setLayout(pall.filter(ele => ele.x >= min & (ele.x + ele.w) <= max).map(ele => {
     let copy = {...ele}
     copy.x -= min
     return copy
   }))
 }
 
-const handleRangeChange = (e, range, setRange, pall, setLayout, mall, setMlayout) => {
+const handleRangeChange = (e, range, setRange, mall, setMlayout) => {
   if (range.startIndex === e.startIndex & range.endIndex === e.endIndex) {return}
   
   const min = e.startIndex
   const max = e.endIndex
   setRange(e)
-  let newl = pall.filter(ele => ele.x >= min & ele.x <= max).map(ele => {
-    let copy = {...ele}
-    copy.x -= min
-    return copy
-  })
-  CollapseNOUA(newl, setLayout)
-  setMlayout(mall.filter(ele => ele.x >= min & ele.x <= max).map(ele => {
+  setMlayout(mall.filter(ele => ele.x >= min & (ele.x + ele.w) <= max).map(ele => {
     let copy = {...ele}
     copy.x -= min
     return copy
@@ -91,7 +87,7 @@ const updateAll = (l, pall, range, setPall) => {
     copy.x += min
     return copy
   })
-  let newl = pall.filter(ele => ele.x < min | ele.x > max).concat(adjusted)
+  let newl = pall.filter(ele => ele.x < min | (ele.x + ele.w)  > max).concat(adjusted)
   setPall(newl) 
 }
 
@@ -101,22 +97,17 @@ const Mcollapse = (mlayout, mall, range, setMall, setMlayout) => {
   let newl = mlayout.map(ele => {
     let copy = {...ele}
     copy.y = 0
+    copy.h = 1
     return copy
   })
   setMlayout(newl)
 }
-
-const Canvas = ({data, numSteps, pall, setPall, mall, setMall}) => {
-
-  const [range, setRange] = useState({startIndex: 0, endIndex: numSteps})
-  const [layout, setLayout] = useState([...pall])
-  const [mlayout, setMlayout] = useState([...mall])
-
-  return (
-  <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
-  <div style={{height:"80%"}}>
-    <ResponsiveContainer width="100%" height="100%">
-      <LineChart
+const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
+const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
+  if (view == "stack") {
+    return (
+      <ResponsiveContainer height="100%" width="100%">
+        <AreaChart
         width={500}
         height={300}
         data={data}
@@ -128,7 +119,7 @@ const Canvas = ({data, numSteps, pall, setPall, mall, setMall}) => {
           bottom: 5,
         }}
       >
-        {Object.keys(data[0]).slice(1).map(v => <Line type="linear" dataKey={v} dot={false}/>)}
+        {Object.keys(data[0]).slice(1).map((v, i) => <Area type="linear" dataKey={v} stackId="1" stroke={colors[i % colors.length]} fill={colors[i % colors.length]}/>)}
         
         <CartesianGrid strokeDasharray="3 3" />
 
@@ -136,29 +127,54 @@ const Canvas = ({data, numSteps, pall, setPall, mall, setMall}) => {
         <YAxis style={{fontSize:"small"}}/>
         <Tooltip />
         <ReferenceLine y={0} stroke="#000" />
-        <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, pall, setLayout, mall, setMlayout, setMall)}/>
-      </LineChart>
+        <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, mall, setMlayout)}/>
+      </AreaChart>
+      </ResponsiveContainer>
+    )
+  } 
+  return (
+    <ResponsiveContainer height="100%" width="100%">
+      <LineChart
+      width={500}
+      height={300}
+      data={data}
+      stackOffset="sign"
+      margin={{
+        top: 5,
+        right: 5,
+        left: -10,
+        bottom: 5,
+      }}
+    >
+      {Object.keys(data[0]).slice(1).map(v => { return (v.includes("quantile") ? (<Line type="linear" dataKey={v} dot={false} stroke={"red"}/>) :
+        (<Line type="linear" dataKey={v} dot={false}/>))
+        })}
+      
+      <CartesianGrid strokeDasharray="3 3" />
+
+      <XAxis dataKey="date" fontSize={"small"} minTickGap={40} interval={"equidistantPreserveStart"}/>
+      <YAxis style={{fontSize:"small"}}/>
+      <Tooltip />
+      <ReferenceLine y={0} stroke="#000" />
+      <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, pall, setLayout, mall, setMlayout, setMall)}/>
+    </LineChart>
     </ResponsiveContainer>
+  )
+}
 
-  </div>
-  <div style={{margin:"5px"}} onFocus={() => Open(range, setRange, pall, setLayout)} onBlur={() => Collapse(layout, setLayout, pall, range, setPall)} tabIndex={-1}>
-      <ReactGridLayout
-            className="layout"
-            layout= {layout}
-            isResizable = {false}
-            cols={(range.endIndex - range.startIndex + 1)}
-            rowHeight={25}
-            onLayoutChange={(l) => {setLayout(l)}}
-            style={{background:"#434343ff"}}
-          >
-            {layout.map(cb => {
-              const id = cb.i
-              return(<div className={id.includes("mul") ? "mul" : "sng"} key={id}></div>)
-          })}
-      </ReactGridLayout>
+const Canvas = ({simprops}) => {
+
+  let view, simData, mevents, mall, setMall, mlayout, setMlayout, range, setRange;
+  ({view, simData, mevents, mall, setMall, mlayout, setMlayout, range, setRange} = simprops)
+
+  return (
+  <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column", overflowY:"auto", marginBottom:"100px"}}>
+    <div style={{flex:"1"}}>
+    
+    <Chart view={view} data={simData} range={range} setRange={setRange} mall={mall} setMlayout={setMlayout} />
+
     </div>
-
-    <div style={{margin:"5px"}} onFocus={() => Open(range, setRange, mall, setMlayout)} onBlur={() => Mcollapse(mlayout, mall, range, setMall, setMlayout)} tabIndex={-1}>
+    <div style={{margin:"5px", flex:"0"}} onFocus={() => Open(range, setRange, mall, setMlayout)} onBlur={() => Mcollapse(mlayout, mall, range, setMall, setMlayout)} tabIndex={-1}>
       <ReactGridLayout
             className="layout"
             layout= {mlayout}
@@ -171,7 +187,7 @@ const Canvas = ({data, numSteps, pall, setPall, mall, setMall}) => {
           >
             {mlayout.map(cb => {
               const id = cb.i
-              return(<div className="macro_up" key={id}></div>)
+              return(<div className={(id.includes("green") ? "macro_up" : "macro_down")} key={id}>{mevents[id].subj}</div>)
           })}
       </ReactGridLayout>
     </div>

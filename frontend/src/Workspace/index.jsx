@@ -6,6 +6,17 @@ import Construct from './Construct'
 
 function Workspace({mode, full, setFull}) {
 
+  const [mall, setMall] = useState([])
+  const [view, setView] = useState("sep")
+  const [mlayout, setMlayout] = useState([...mall])
+  const [mevents, setMevents] = useState({})
+  const [simData, setSimData] = useState(Array(50).fill({
+      "name": "Page A",
+      "value": 0,
+  }))
+  const [range, setRange] = useState({startIndex: 0, endIndex: 50})
+  const simprops = {mall: mall, setMall: setMall, view: view, setView: setView, mlayout: mlayout, setMlayout: setMlayout, mevents: mevents, setMevents: setMevents, simData: simData, setSimData: setSimData, range: range, setRange: setRange}
+
   const [portfolio, setPortfolio] = useState([
     { id: 1, title: "Stocks", data: [["Symbol", "Quantity", "Leverage"]], open: true},
     { id: 2, title: "Bonds", data: [["Term", "Quantity", "Price"]], open: true},
@@ -38,7 +49,7 @@ function Workspace({mode, full, setFull}) {
     case "Analyze":
       return <Analyze isUpdated= {isUpdated} layout={layout} setLayout={setLayout} full={full} setFull={setFull} portfolio={portfolio} setIsUpdated={setIsUpdated} report={report} setReport={setReport}/>
     case "Simulate":
-      return <Simulate full={full} setFull={setFull} report={report} portfolio={portfolio}/>
+      return <Simulate full={full} setFull={setFull} report={report} portfolio={portfolio} simprops={simprops}/>
   }
 }
 

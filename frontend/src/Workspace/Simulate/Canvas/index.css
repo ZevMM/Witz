@@ -9,3 +9,7 @@
 .macro_up {
     background-color: rgba(24, 188, 24, 0.525);
 }
+
+.macro_down {
+    background-color: rgba(188, 24, 24, 0.525);
+}

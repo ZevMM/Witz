@@ -27,8 +27,8 @@
     margin-left: 5px
 }
 
-.sim input,
-.sim select {
+.siminput,
+.simselect {
     background-color: transparent;
     border: 1px solid #666666;
     margin: 5px 0px;

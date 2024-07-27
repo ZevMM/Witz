@@ -49,7 +49,6 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
 
     //[30, 40, 5]
     // Simulate GBM
-    console.log(events)
     for (let n = 0; n < num_simulations; n++) {
         for (let t = 1; t < num_time_steps; t++) {
             let rand = Array(num_stocks + numevents).fill(0);
@@ -58,7 +57,6 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
                 for (const [k, v] of Object.entries(events[String(t)])) {
                     rand._data[parseInt(k)] = v
                 }
-                console.log(rand)
             }
             // Generate correlated increments
             let dW = math.multiply(L, rand);

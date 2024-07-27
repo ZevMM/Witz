@@ -417,7 +417,6 @@ app.post('/linegraph', (request, response) => {
           "date": shortdate,
           ...row
         }
-        console.log(entry)
         toReturn.push(entry)
       })
       response.json(toReturn)
@@ -429,14 +428,7 @@ app.post('/linegraph', (request, response) => {
 app.post('/simulate', (request, response) => {
   let toReturn = []
 
-  const asc = arr => arr.sort((a, b) => a - b);
-
-  const sum = arr => arr.reduce((a, b) => a + b, 0);
-
-  const mean = arr => sum(arr) / arr.length;
-
-  const quantile = (arr, q) => {
-    const sorted = asc(arr);
+  const quantile = (sorted, q) => {
     const pos = (sorted.length - 1) * q;
     const base = Math.floor(pos);
     const rest = pos - base;
@@ -447,20 +439,21 @@ app.post('/simulate', (request, response) => {
     }
   };
 
-
   const portfolio = request.body.portfolio
   const names = request.body.names
   const events = request.body.events
+  const numsims = parseInt(request.body.numsims)
+  const numsteps = parseInt(request.body.numsteps)
   let stocks = portfolio[0]["data"].slice(1)
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")}, "GOOG", "AMZN", "MSFT" FROM stockprices`, function(err, rows) {  
+    db.all(`SELECT ${stocks.map((s => s[0])).join(", ")}, ${names.join(",")} FROM monthlyStock INNER JOIN indices ON monthlyStock.date = indices.DATE `, function(err, rows) {
       let df = pl.DataFrame(rows)
       let drifts = []
       let vols = []
       let starts = []
       let allLogReturns = []
       
-      df.columns.slice(1).forEach(
+      df.columns.forEach(
         col => {
           let logReturns = [];
           col = df[col].toArray()
@@ -482,13 +475,40 @@ app.post('/simulate', (request, response) => {
           covMatrix[n][i] = cov
         }
       }
-      let numsims = 1
-      simData = sim.GBM(drifts, vols, numsims, stocks.length, 50, starts, covMatrix, names.length, events)
-      for (let i = 0; i < 50; i++){
-        let entry = {"date": i}
-        for (let n = 0; n < stocks.length; n++){
-          entry[stocks[n][0]] = simData[n][i].reduce((s,c) => s+c) / numsims
+      
+      simData = sim.GBM(drifts, vols, numsims, stocks.length, numsteps, starts, covMatrix, names.length, events)
+
+      if (numsims > 1){
+        for (let i = 0; i < numsteps; i++){
+          let entry = {"date": i}
+          let allprices = []
+          for (let p =0; p< numsims; p++) {
+            let tot = 0
+            for (let n = 0; n < stocks.length; n++){
+              tot += simData[n][i][p]
+            }
+            entry[`tot${p}`] = tot
+            allprices.push(tot)
+          }
+          allprices = allprices.sort((a, b) => a - b);
+          entry["quantile25"] = quantile(allprices, 0.25)
+          entry["quantile75"] = quantile(allprices, 0.75)
+          toReturn.push(entry)
         }
+        console.log(toReturn)
+        response.json(toReturn)
+        return
+      }
+
+      for (let i = 0; i < numsteps; i++){
+        let entry = {"date": i}
+        
+        for (let n = 0; n < stocks.length; n++){
+          for (let p =0; p< numsims; p++) {
+          entry[stocks[n][0]] = simData[n][i][p]
+          }
+        }
+        
         toReturn.push(entry)
       }
       response.json(toReturn)

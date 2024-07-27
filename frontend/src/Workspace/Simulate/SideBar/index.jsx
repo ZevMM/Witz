@@ -21,7 +21,14 @@ const getTaskPos = (id, portfolio) => {
   return portfolio.findIndex(element => element.id == id)
 }
 
-const runSim = (setSimData, portfolio, all, events) => {
+const runSim = (e, setSimData, portfolio, all, events, setView) => {
+  e.preventDefault()
+  let numsteps = e.target.numsteps.value
+  let type = e.target.type.value
+  let rebalance = e.target.rebalance.checked
+  let numsims = (type == "montecarlo") ? e.target.numsims.value : 1
+
+
   let formatted = {}
   let names = {}
   let count = 0
@@ -51,10 +58,11 @@ const runSim = (setSimData, portfolio, all, events) => {
   }
   console.log(formatted)
   axios
-  .post('http://localhost:3001/simulate', {portfolio: portfolio, events: formatted, names: ordered})
+  .post('http://localhost:3001/simulate', {portfolio: portfolio, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps})
   .then(response => {
     console.log(response)
     setSimData(response.data)
+    setView(type)
   })
 }
 
@@ -69,15 +77,28 @@ const limToggle = (lim) => {
   }
 }
 
-const addMevent = (e) => {
-  e.preventDefault
-  console.log(e.target.value)
 
+
+const handleSubmit = (e, id, setID, mevents, mall, setMevents, setMall, mlayout, setMlayout, range) => {
+  e.preventDefault()
+  let idx = e.target.idx.value
+  let pct = e.target.pct.value
+  let color = (pct > 0) ? "green" : "red"
+  setMevents({...mevents, [`${color}${id}`] : {subj:idx, pct:pct}})
+  setMlayout([...mlayout, {x: 0, y: 0, w:1, h:1, i:`${color}${id}`}])
+  setMall([...mall, {x: range.startIndex, y: 0, w:1, h:1, i:`${color}${id}`}])
+  setID(id + 1)
 }
 
-function SideBar({type, portfolio, setSimData, pall, pevents, mall, mevents, setPall, setMall, setPevents, setMevents}) {
-  const [cat, setCat] = useState("1")
-  const [lim, setLim] = useState(false)
+//should query the database to figure out all the names but not gonna add much more so this is fine for now
+const indices = ["PNRGINDEXM",	"USEPUINDXD",	"GEPUCURRENT",	"CPIAUCSL",	"CORESTICKM159SFRBATL",	"AMBOR30",	"AMERIBOR",	"MORTGAGE30US",	"FEDFUNDS",	"SP500",	"DJIA",	"APU0000704111",	"DEXUSEU",	"BOGMBASE",	"COMPOUT",	"IHLIDXUSTPSOFTDEVE",	"BBKMGDP",	"WEI",	"ACTLISCOUUS"]
+
+
+function SideBar({type, portfolio, simprops}) {
+  let range, setSimData, mall, mevents, setMall, setMevents, mlayout, setMlayout, setView;
+  ({range, setSimData, mall, mevents, setMall, setMevents, mlayout, setMlayout, setView} = simprops)
+  const [id, setID] = useState(0)
+  const [ismc, setIsmc] = useState(false)
   console.log("mall",mall)
   switch (type) {
     case "Add":
@@ -85,76 +106,59 @@ function SideBar({type, portfolio, setSimData, pall, pevents, mall, mevents, set
         <div id="simsidebar" className="sim">
           <h3>Add Event</h3>
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
-          <div style={{ fontFamily:"Nunito"}}>Macro Event</div>
-          <form style={{width: "75%"}}>
+          <form style={{width: "75%"}} onSubmit={(e) => handleSubmit(e, id, setID, mevents, mall, setMevents, setMall, mlayout, setMlayout, range)}>
             <div className="label">Index</div>
-            <select onChange={(e) => setCat(e.target.value)}>
-              <option value="1">Stock</option>
-              <option value="2">Bond</option>
-              <option value="3">Debt</option>
+            <select className="simselect" name="idx">
+              {indices.map(i => (<option value={i}>{i}</option>))}
             </select>
             <div className="label">Percent Change</div>
-            <input type="number" />
-            <input type="submit" value="Add" onClick={(e) => addMevent(e)}/>
-          </form>
-
-          <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
-
-          <div style={{ fontFamily:"Nunito"}}>Portfolio Event</div>
-          <form style={{width: "75%"}}>
-            <div className="label">Asset</div>
-            <select onChange={(e) => setCat(e.target.value)}>
-              <option value="1">Stock</option>
-              <option value="2">Bond</option>
-              <option value="3">Debt</option>
-            </select>
-            <div className="label">Quantity</div>
-            <input type="number" />
-
-            <div className="label">Side</div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"start"}}>
-              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
-                <input type="radio" id="buy" name="side" value="buy" />
-                <label for="buy">Buy</label>
-              </div>
-              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
-                <input type="radio" id="sell" name="side" value="sell" />
-                <label for="sell">Sell</label>
-              </div>
-            </div>
-
-            <div className="label">Type</div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"start"}}>
-              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
-                <input type="radio" id="market" name="type" value="market" onClick={()=>setLim(false)}/>
-                <label for="market">Market</label>
-              </div>
-              <div style={{display:"flex", flexDirection:"row", alignItems: "center", marginLeft:"10%"}}>
-                <input type="radio" id="limit" name="type" value="limit" onClick={()=>setLim(true)}/>
-                <label for="limit">Limit</label>
-              </div>
-            </div>
-              {limToggle(lim)}
-
-            <input type="submit" value="Add"/>
-          </form>
-          
+            <input type="number" name="pct" className="siminput" required/>
+            <input type="submit" value="Add" className="siminput"/>
+          </form>          
         </div>
       )
     case "Control":
-      return (<div id="simsidebar">
+      return (<div id="simsidebar" className='sim' >
           <h3>Control Panel</h3>
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
-          <div className="label">Start</div>
-          <input type="date" name="Start" required/>
-          <div className="label">End</div>
-          <input type="date" name="End" required/>
-          <div className="label">Step Size (days)</div>
-          <input type="number" name="Step" required/>
-          <input type={"submit"} value="Set" />
-          <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
-          <button onClick={() => runSim(setSimData, portfolio, mall, mevents)}>Run</button>
-      </div>)
+
+          <form style={{width:"75%"}} onSubmit={(e) => runSim(e, setSimData, portfolio, mall, mevents, setView)}>
+          <div className="label">Time Steps</div>
+          <input type="number" name="numsteps"  className="siminput" required/>
+          <div className="label">Type</div>
+
+          <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+            <input type="radio" id="stack" name="type" value="stack" onClick={() => setIsmc(false)}/>
+            <label for="stack" style={{marginLeft:"5px"}}>Stacked</label>
+            
+          </div>
+
+          <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+            <input type="radio" id="sep" name="type" value="sep" onClick={() => setIsmc(false)}/>
+            <label for="sep" style={{marginLeft:"5px"}}>Separate</label>
+            
+          </div>
+
+          <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+            <input type="radio" id="montecarlo" name="type" value="montecarlo" onClick={() => setIsmc(true)}/>
+            <label for="montecarlo" style={{marginLeft:"5px"}}>Monte Carlo</label>
+            
+          </div>
+          {ismc? (<><div className="label">Simulations</div><input name="numsims" className={"siminput"} type="number"/></>)
+           : null}
+
+
+
+          <div style={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", marginTop:"7px"}}>
+          <label for="rebalance" style={{marginRight:"5px"}}>Rebalance?</label>
+          <input type="checkbox" name="rebalance" id="rebalance"/>
+          
+          </div>
+          
+
+          <input className={"siminput"} type="submit" value="Run" />
+          </form> 
+    </div>  )
   }
 }
 
