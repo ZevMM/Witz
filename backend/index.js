@@ -516,6 +516,120 @@ app.post('/simulate', (request, response) => {
   })
 })
 
+app.get('/stocks', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('monthlyStock');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+app.get('/realestate', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('realEstate');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+app.get('/mutualfunds', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('mutualFunds');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+app.get('/ETFs', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('ETFs');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+app.get('/crypto', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('crypto');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+app.get('/commodities', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('commodities');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+//pretty sure I could have made all of these into one function.
+app.get('/currency', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('currency');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+
+app.post('/adduser', (request, response) => {
+  const user = request.body.name
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
+      if (err) {
+        console.log(err.message)
+        return
+      }
+      db.all(`SELECT Date FROM monthlyStock`, (err, rows) => {
+        rows.forEach(row => {
+          db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {console.log(err, "done")})
+        })
+      })
+    })
+  })
+})
+
+app.post('/deleteuser', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    db.run(`DROP TABLE ${request.body.name}`, (err) => console.log(err))
+  })
+})
+
+app.post('/portfolioAdd', (request, response) => {
+  console.log(request.body)
+
+  const cat = request.body.cat
+  const data = request.body.data
+  const name = data[0]
+  const user = "user123"
+  
+  let db = new sqlite3.Database('asset-values', (err) => {
+    db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
+      db.run(`UPDATE ${user} SET ${name} = (SELECT ${name} FROM ${cat} WHERE Date = ${user}.Date)`, (err) => console.log(err))
+    })
+/*
+    db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
+      db.all(`SELECT ${name} FROM ${cat}`, (err, rows) => {
+        rows.forEach(row => {
+          db.run(`INSERT INTO ${user}(${name}) VALUES(?)`, row[name])
+        })
+      })
+    })*/
+  })
+})
+
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)

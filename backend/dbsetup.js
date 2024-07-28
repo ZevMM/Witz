@@ -3,19 +3,21 @@ const { parse } = require("csv-parse");
 const sqlite3 = require('sqlite3').verbose();
 
 
-
-
-/*
 let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
+    //db.run('DROP TABLE ETFs', (err) => console.log(err))
     //ALTER TABLE {tableName} ADD COLUMN COLNew {type}; 
-    db.run('CREATE TABLE monthlyStock(Date date,AAPL number,ADBE number,AMZN	number,AVGO	number,CSCO	number,DIS	number,GOOG	number,HD	number,JPM	number,MA	number,META	number,MSFT	number,NFLX	number,NVDA	number,PFE	number,TSLA	number,UNH	number,V number)', function(err) {
-        fs.createReadStream("./monthlyStock.csv")
+    db.run('CREATE TABLE IF NOT EXISTS currency(Date date,AUD number,CNY number,EUR number,GBP number,HKD number,INR number,JPY number,NZD number)', function(err) {
+        if (err) {
+            console.log(err.message)
+            return
+        }
+        fs.createReadStream("./currency.csv")
         .pipe(parse({ delimiter: ",", from_line: 2 }))
         .on("data", function (row) {
-        db.run(`INSERT INTO monthlyStock(Date,AAPL ,ADBE ,AMZN	,AVGO	,CSCO	,DIS	,GOOG	,HD	,JPM	,MA	,META	,MSFT	,NFLX	,NVDA	,PFE	,TSLA	,UNH	,V ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, row, function(err) {
+        db.run(`INSERT INTO currency(Date,AUD,CNY,EUR,GBP,HKD,INR,JPY,NZD) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`, row, function(err) {
             if (err) {
                 return console.log(err.message);
             }
@@ -33,18 +35,21 @@ let db = new sqlite3.Database('asset-values', (err) => {
         });
     });
 });
-*/
 
 
-
-
+/*
 let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
-    db.all(`SELECT AAPL, NVDA, SP500, DJIA FROM monthlyStock INNER JOIN indices ON monthlyStock.date = indices.DATE `, function(err, rows) {  
-        rows.forEach(function (row) {  
-            console.log(row);
-        })  
-    });
+    db.all("SELECT * FROM realEstate ORDER BY DATE", (err, rows) => {
+       rows.forEach(r => console.log(r))
 })
+    //db.all("SELECT name FROM PRAGMA_TABLE_INFO('monthlyStock');", (err, rows) => console.log(rows) )
+
+    //db.all(`SELECT AAPL, NVDA, SP500, DJIA FROM monthlyStock INNER JOIN indices ON monthlyStock.date = indices.DATE `, function(err, rows) {  
+    //    rows.forEach(function (row) {  
+    //        console.log(row);
+    //    })  
+    //});
+})*/
