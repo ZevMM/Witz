@@ -2,7 +2,7 @@ const fs = require("fs");
 const { parse } = require("csv-parse");
 const sqlite3 = require('sqlite3').verbose();
 
-
+/*
 let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
@@ -34,7 +34,7 @@ let db = new sqlite3.Database('asset-values', (err) => {
         db.close();
         });
     });
-});
+});*/
 
 
 /*
@@ -53,3 +53,33 @@ let db = new sqlite3.Database('asset-values', (err) => {
     //    })  
     //});
 })*/
+
+/*
+let db = new sqlite3.Database('asset-values', (err) => {
+    db.run(`ALTER TABLE mutualFunds DROP COLUMN Kinetics_Internet_No_Load`, (err) => {
+        if (err) {
+            console.log(err.message)
+            return
+        }
+        db.all("SELECT * FROM realEstate ORDER BY DATE", (err, rows) =>
+            rows.forEach(r => console.log(r)))
+    })
+    
+})*/
+
+/*
+let db = new sqlite3.Database('asset-values', (err) => {
+    db.run(`DELETE FROM crypto WHERE DATE = '2024-07-01'`, (err) => console.log(err))
+})
+*/
+
+let db = new sqlite3.Database('asset-values', (err) => {
+    db.all("SELECT * FROM crypto WHERE Date > '2024-04-01' OR Date < '2019-10-01' ORDER BY DATE", (err, rows) =>
+        rows.forEach(r => console.log(r)))
+})
+
+/*
+let db = new sqlite3.Database('asset-values', (err) => {
+    db.run(`ALTER TABLE crypto RENAME COLUMN "DATE" TO Date`, (err) => console.log(err))
+})
+*/

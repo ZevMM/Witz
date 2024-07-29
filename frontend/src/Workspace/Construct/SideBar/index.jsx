@@ -62,7 +62,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio}) => {
     setDrop(false)
   }
 
-  if (cat == "realestate") {
+  if (cat == "realEstate") {
     return (
       <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio, setFilter)}>
       <div className="label">Region</div>
@@ -80,7 +80,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio}) => {
       <div className="label">Principal</div>
       <input type="number" name="Quantity"  autoComplete='off' required/>
       <div className="label">Date</div>
-      <input type="date" name="date"  autoComplete='off' required/>
+      <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
       <div className="label">Leverage</div>
       <input type="number" name="Price"  autoComplete='off' required/>
       <input type={"submit"} value="Add" />
@@ -105,7 +105,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio}) => {
       <div className="label">Principal</div>
       <input type="number" name="Quantity"  autoComplete='off' required/>
       <div className="label">Date</div>
-      <input type="date" name="date"  autoComplete='off' required/>
+      <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
       <div className="label">Leverage</div>
       <input type="number" name="Price"  autoComplete='off' required/>
       <input type={"submit"} value="Add" />
@@ -130,7 +130,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio}) => {
       <div className="label">Principal</div>
       <input type="number" name="Quantity"  autoComplete='off' required/>
       <div className="label">Date</div>
-      <input type="date" name="date"  autoComplete='off' required/>
+      <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
       <div className="label">Leverage</div>
       <input type="number" name="Price"  autoComplete='off' required/>
       <input type={"submit"} value="Add" />
@@ -150,8 +150,10 @@ const Inputs = ({all, cat, portfolio, setPortfolio}) => {
   <input name="Symbol" id="Symbol" value={filter} onChange={(e) => setFilter(e.target.value)} autoComplete='off'/>
   {drop? <Dropdown options={options} setFilter={setFilter} setDrop={setDrop}/> : null}
   </div>
-  <div className="label">Quantity</div>
+  <div className="label">Principal</div>
   <input type="number" name="Quantity"  autoComplete='off' required/>
+  <div className="label">Date</div>
+  <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
   <div className="label">Leverage</div>
   <input type="number" name="Price"  autoComplete='off' required/>
   <input type={"submit"} value="Add" />
@@ -161,7 +163,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio}) => {
 }
 
 function SideBar({type, portfolio, setPortfolio}) {
-  const [cat, setCat] = useState("stocks")
+  const [cat, setCat] = useState("monthlyStock")
   const [all, setAll] = useState([])
 
   useEffect(() => {
@@ -186,9 +188,9 @@ function SideBar({type, portfolio, setPortfolio}) {
             <option value="currency">Currency</option>
             <option value="ETFs">Exchange Traded Funds</option>
             <option value="6">Hedge Funds</option>
-            <option value="mutualfunds">Mutual Funds</option>
-            <option value="realestate">Real Estate</option>
-            <option value="stocks">Stocks</option>
+            <option value="mutualFunds">Mutual Funds</option>
+            <option value="realEstate">Real Estate</option>
+            <option value="monthlyStock">Stocks</option>
             
           </select>
         </form>

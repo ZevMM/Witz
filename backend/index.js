@@ -162,35 +162,26 @@ app.post('/data', (request, response ) => {
 })
 
 app.post('/totalvalue', (request, response) => {
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
-  console.log(stocks)
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
-    db.get(`SELECT ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, row) {  
-        response.json(stocks.reduce((sum, cur) => sum += (row[cur[0]] * cur[1]), 0))
+    db.get(`SELECT * FROM user123`, function(err, row) {
+      response.json(Object.values(row).slice(1).reduce((sum, cur) => sum += cur)  )
     });
   })
 
 })
 
 app.post('/volatility', (request, response) => {
-  
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
-  
 
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
-    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+    db.all(`SELECT * FROM user123`, function(err, rows) {  
       let df = pl.DataFrame(rows)
-      stocks.forEach(s => {
-        df = df.withColumn(pl.col(s[0]).mul(parseInt(s[1])))
-      });
+
       df = (df.withColumn(
         pl.sumHorizontal(pl.all().exclude("Date").alias("Total Value"))
       ))
@@ -289,10 +280,8 @@ function convertDateFormat(dateString) {
 
 
 app.post('/areachart', (request, response) => {
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+    db.all(`SELECT * FROM user123`, function(err, rows) {  
       let df = pl.DataFrame(rows)
       let toReturn = []
       df.rows().forEach((row) => {
@@ -310,27 +299,32 @@ app.post('/areachart', (request, response) => {
 
 app.post('/valuepiechart', (request, response) => {
   const portfolio = request.body
+  console.log(portfolio)
+
   let stocks = portfolio[0]["data"].slice(1)
   let all = []
   let cats = []
+  const colors = ["#ed6268", "#7aa5e2", "#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
 
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
     //make sure this is newest, not oldest
-    db.get(`SELECT ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, row) {  
-      let values = stocks.map(s => {
-        return(parseInt(s[1]) * row[s[0]])
-    })
-      
-      let maxval = Math.max(...values)
-      all = (stocks.map((s, i) => {
-        let ratio = Math.floor(values[i] * 99 / maxval)
-        return ({ "name" : s[0], "value" : values[i], "fill" : ratio > 9 ? `#ed6268${ratio}` : `#ed62680${ratio}` })
-    }))
-      cats.push({ "name": "Stocks", "value": values.reduce((s, c) => s + c), "fill": "#ed6268"  })
-      
+
+    db.get(`SELECT * FROM user123`, function(err, row) {  
+      portfolio.forEach((c, q) => {
+        if (c.data.length > 1) {
+          let prices = c.data.slice(1).map(d => {return {name: d[0], val: row[d[0]]}})
+          prices.sort((a, b) => a.val - b.val)
+          prices = prices.map((p, i) => {
+            const ext = Math.floor(45 * (i + 1) / prices.length + 44)
+            return({"name" : p.name, "value" : p.val, "fill": ext > 9 ? `${colors[q]}${ext}` : `${colors[q]}0${ext}`})
+          })
+          all.push(...prices)
+          cats.push({"name" : c.title, "value": prices.reduce((sum, cur) => sum + cur.value, 0), "fill": `${colors[q]}`})
+        }
+      })
       let toReturn = {
         "data1" : all,
         "data2" : cats
@@ -387,10 +381,8 @@ app.post('/riskpiechart', (request, response) => {
 })
 
 app.post('/tstable', (request, response) => {
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+    db.all(`SELECT * FROM user123`, function(err, rows) {  
       let df = pl.DataFrame(rows)
       let toReturn = df.toObject()
 
@@ -402,10 +394,9 @@ app.post('/tstable', (request, response) => {
 
 app.post('/linegraph', (request, response) => {
   //do I want to scale relative to average or do pct change?
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
+  //I should make the keys the asset names
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT Date, ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
+    db.all(`SELECT * FROM user123`, function(err, rows) {  
       let df = pl.DataFrame(rows)
       let toReturn = []
       let avgs = []
@@ -516,7 +507,16 @@ app.post('/simulate', (request, response) => {
   })
 })
 
-app.get('/stocks', (request, response) => {
+app.get('/myportfolio', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+})
+
+app.get('/monthlyStock', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
@@ -525,7 +525,7 @@ app.get('/stocks', (request, response) => {
   })
 })
 
-app.get('/realestate', (request, response) => {
+app.get('/realEstate', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
@@ -534,7 +534,7 @@ app.get('/realestate', (request, response) => {
   })
 })
 
-app.get('/mutualfunds', (request, response) => {
+app.get('/mutualFunds', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
@@ -581,19 +581,25 @@ app.get('/currency', (request, response) => {
 
 
 app.post('/adduser', (request, response) => {
+  console.log("new user")
   const user = request.body.name
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
-    db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
-      if (err) {
-        console.log(err.message)
-        return
-      }
-      db.all(`SELECT Date FROM monthlyStock`, (err, rows) => {
-        rows.forEach(row => {
-          db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {console.log(err, "done")})
+    db.run(`DROP TABLE IF EXISTS ${user}`, err => {
+      db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
+        if (err) {
+          console.log(err.message)
+          return
+        }
+        db.all(`SELECT Date FROM monthlyStock`, (err, rows) => {
+          rows.forEach(row => {
+            db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {
+              if (err) {
+                console.error(err.message);
+            }})
+          })
         })
       })
     })
@@ -602,30 +608,57 @@ app.post('/adduser', (request, response) => {
 
 app.post('/deleteuser', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.run(`DROP TABLE ${request.body.name}`, (err) => console.log(err))
+    db.run(`DROP TABLE IF EXISTS ${request.body.name}`, (err) => {if (err) {
+      console.error(err.message);
+  }})
+  })
+})
+
+app.get('/test', (request, response) => {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    db.all(`SELECT * FROM "user123"`, (err, rows) => console.log(err, rows))
   })
 })
 
 app.post('/portfolioAdd', (request, response) => {
-  console.log(request.body)
-
+  
   const cat = request.body.cat
   const data = request.body.data
   const name = data[0]
+  const principal = data[1]
+  let date = data[2]
+  date = 12 * (parseInt(date.slice(0,4)) - 2019) + parseInt(date.slice(5,7)) - 7
+  const leverage = data[3]
   const user = "user123"
   
   let db = new sqlite3.Database('asset-values', (err) => {
+    
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
-      db.run(`UPDATE ${user} SET ${name} = (SELECT ${name} FROM ${cat} WHERE Date = ${user}.Date)`, (err) => console.log(err))
-    })
-/*
-    db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
-      db.all(`SELECT ${name} FROM ${cat}`, (err, rows) => {
+      db.all(`SELECT Date, ${name} FROM ${cat} ORDER BY Date`, (err, rows) => {
+        
+        if (leverage > 1) {
+          let returns = []
+          for(let i = 1; i < rows.length; i++) {
+            returns.push((rows[i][name] / rows[i-1][name]) - 1)
+          }
+          for (let i = 0; i < returns.length; i++) {
+            // if it goes negative I should set it to zero
+            let newval = (leverage * returns[i] + 1) * rows[i][name]
+            if (newval < 0) {
+              newval = 0
+            }
+            rows[i+1][name] = newval
+          }
+        }
+
+        const quantity = (principal / rows[date][name])
         rows.forEach(row => {
-          db.run(`INSERT INTO ${user}(${name}) VALUES(?)`, row[name])
+          db.run(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`,(quantity * row[name]), (row.Date), err => {if (err) {
+            console.error(err.message);
+        }})
         })
       })
-    })*/
+    })
   })
 })
 

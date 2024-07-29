@@ -5,8 +5,15 @@ import { useState, useEffect } from 'react';
 
 const RenderAreaChart = ({portfolio}) => {
   const [data, setData] = useState(null)
-  const [active, setActive] = useState(portfolio[0]["data"].slice(1))
-  const [timespan, setTimespan] = useState(-250)
+  const [active, setActive] = useState([])
+  const [timespan, setTimespan] = useState(-59)
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/myportfolio')
+    .then(response =>
+      setActive(response.data)
+    )
+  }, [])
 
   useEffect(() => {
     axios
@@ -15,7 +22,7 @@ const RenderAreaChart = ({portfolio}) => {
         console.log(response.data)
         setData(response.data.slice(timespan))
     })
-    }, [timespan, active])
+    }, [timespan])
 
     const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
 
@@ -56,7 +63,7 @@ const RenderAreaChart = ({portfolio}) => {
 
         
         <div style={{color: "black", padding:"5px", flex:"0", display:"flex", justifyContent:"space-around", alignItems:"center", paddingLeft:"10%", paddingRight:"10%"}}>
-          {active.map((s, i) => <div><span class="dot" style={{backgroundColor:colors[i % colors.length], marginRight:"5px"}}></span>{s[0]}</div>)}
+          {active.map((s, i) => <div><span class="dot" style={{backgroundColor:colors[i % colors.length], marginRight:"5px"}}></span>{s}</div>)}
         </div>
         </div>
       );

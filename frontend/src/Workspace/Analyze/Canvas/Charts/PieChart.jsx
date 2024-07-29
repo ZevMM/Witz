@@ -4,6 +4,7 @@ import axios from 'axios';
 
 
 const RenderPieChart = ({portfolio}) => {
+  
   const [data, setData] = useState(null)
   
   useEffect(() => {
@@ -36,9 +37,9 @@ const RenderPieChart = ({portfolio}) => {
 
   <div style={{flex:"1", minHeight: 0, display:"flex"}}>
     <div style={{color: "black", padding:"5px", flex:"0", display:"flex", justifyContent:"space-around", paddingTop:"15%", paddingBottom:"15%", flexDirection:"column"}}>
-          <div style={{display:"flex", alignItems:"center"}}><span class="dot" style={{backgroundColor:"#f5804a", marginRight:"5px"}}></span>Key</div>
-          <div style={{display:"flex", alignItems:"center"}}><span class="dot" style={{backgroundColor:"#d24c84", marginRight:"5px"}}></span>Key</div>
-          <div style={{display:"flex", alignItems:"center"}}><span class="dot" style={{backgroundColor:"#ffdb44", marginRight:"5px"}}></span>Key</div>
+          <div style={{display:"flex", alignItems:"center"}}><span className="dot" style={{backgroundColor:"#f5804a", marginRight:"5px"}}></span>Key</div>
+          <div style={{display:"flex", alignItems:"center"}}><span className="dot" style={{backgroundColor:"#d24c84", marginRight:"5px"}}></span>Key</div>
+          <div style={{display:"flex", alignItems:"center"}}><span className="dot" style={{backgroundColor:"#ffdb44", marginRight:"5px"}}></span>Key</div>
     </div>
 
     <div style={{flex:"1", minHeight: 0}}>

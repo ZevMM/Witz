@@ -34,7 +34,7 @@ const RenderLineChart = ({portfolio}) => {
   <div style={{flex:"1", minHeight: 0}}>
     <ResponsiveContainer width="100%" height="100%">
     <LineChart data={data} margin={{ top: 0, right: 5, bottom: 0, left: -10 }}>
-      {portfolio[0]["data"].slice(1).map((s, i)=> <Line type="linear" dataKey={i} stroke={colors[i % colors.length]} dot={false}/>)}
+      {Object.keys(data[0]).slice(0, -1).map((k)=> <Line type="linear" dataKey={k} stroke={colors[k % colors.length]} dot={false}/>)}
       
       <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
       <XAxis dataKey="date" fontSize={"small"} minTickGap={40} interval={"equidistantPreserveStart"}/>

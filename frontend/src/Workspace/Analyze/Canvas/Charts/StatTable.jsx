@@ -80,16 +80,23 @@ function convertDateFormat(dateString) {
 const StatTable = ({portfolio}) => {
     
     const [data, setData] = useState(null)
-    const [range, setRange] = useState(251)
-    const [freq, setFreq] = useState(21)
-    const [assets, setAssets] = useState(portfolio[0]["data"].slice(1))
+    const [range, setRange] = useState(59)
+    const [freq, setFreq] = useState(1)
+    const [assets, setAssets] = useState([])
     const [filter, setFilter] = useState("Select")
+
+    useEffect(() => {
+        axios.get('http://localhost:3001/myportfolio')
+        .then(response =>
+          setAssets(response.data)
+        )
+      }, [])
 
     useEffect(()=> {
         axios
         .post('http://localhost:3001/tstable', portfolio)
         .then((response) => {
-
+            console.log(response.data)
             setData(response.data)
 
         })
@@ -151,13 +158,13 @@ const StatTable = ({portfolio}) => {
                     {assets.map(a => {
 
                         let temp = []
-                        for (let i = data[a[0]].length - range; i < data[a[0]].length; i+=freq) {
-                            temp.push(data[a[0]][i])
+                        for (let i = data[a].length - range; i < data[a].length; i+=freq) {
+                            temp.push(data[a][i])
                         }
 
                         return(
                             <tr>
-                                <td>{a[0]}</td>
+                                <td>{a}</td>
                                 {temp.map(v => <td>{v}</td>)}
                             </tr>
                         )
