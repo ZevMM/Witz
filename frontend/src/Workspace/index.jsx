@@ -16,7 +16,7 @@ function Workspace({mode, full, setFull}) {
   }))
   const [range, setRange] = useState({startIndex: 0, endIndex: 50})
   const simprops = {mall: mall, setMall: setMall, view: view, setView: setView, mlayout: mlayout, setMlayout: setMlayout, mevents: mevents, setMevents: setMevents, simData: simData, setSimData: setSimData, range: range, setRange: setRange}
-
+  const [levs, setLevs] = useState([])
   const [portfolio, setPortfolio] = useState([
     { id: 1, alt: "1", title: "Bonds", data: [["Type", "Principal", "Date", "Leverage"]], open: true},
     { id: 2, alt: "commodities", title: "Commodities", data: [["Term", "Principal", "Date", "Leverage"]], open: true},
@@ -50,11 +50,11 @@ function Workspace({mode, full, setFull}) {
 
   switch (mode) {
     case "Construct":
-      return <Construct full={full} setFull={setFull} portfolio={portfolio} setPortfolio={setPortfolio}/>
+      return <Construct full={full} setFull={setFull} portfolio={portfolio} setPortfolio={setPortfolio} levs={levs} setLevs={setLevs}/>
     case "Analyze":
       return <Analyze isUpdated= {isUpdated} layout={layout} setLayout={setLayout} full={full} setFull={setFull} portfolio={portfolio} setIsUpdated={setIsUpdated} report={report} setReport={setReport}/>
     case "Simulate":
-      return <Simulate full={full} setFull={setFull} report={report} portfolio={portfolio} simprops={simprops}/>
+      return <Simulate full={full} setFull={setFull} report={report} portfolio={portfolio} simprops={simprops} levs={levs}/>
   }
 }
 

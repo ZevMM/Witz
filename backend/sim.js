@@ -1,8 +1,9 @@
 const math = require('mathjs');
 const randomNormal = require('random-normal');
 
-function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, corr, numevents, events) {
-
+function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, corr, numevents, events, lagMatrix) {
+    console.log("mu", mu)
+    console.log("sigma", sigma)
 
     const dt = 1;  // Time step size
 
@@ -49,25 +50,39 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
 
     //[30, 40, 5]
     // Simulate GBM
+
     for (let n = 0; n < num_simulations; n++) {
+        let rand = Array(num_stocks + numevents).fill(0).map(a => Array(num_time_steps + 6).fill(0).map(e => randomNormal()))
         for (let t = 1; t < num_time_steps; t++) {
-            let rand = Array(num_stocks + numevents).fill(0);
-            rand = math.matrix(rand.map(e => randomNormal()))
-            if (events[String(t)]){
-                for (const [k, v] of Object.entries(events[String(t)])) {
-                    rand._data[parseInt(k)] = v
+            if (events[String(t + 3)]){
+                for (const [k, v] of Object.entries(events[String(t + 3)])) {
+                    rand[parseInt(k)][t+3] = v
                 }
             }
+            let dW = []
+            
+            
+            lagMatrix.forEach((l, ix) => {
+                let other = l.map((x,i) => rand[i][t + 3 - x])
+                let self = L._data[ix]
+                let matrixmul = other.reduce((sum, cur, idx) => self[idx] * cur + sum, 0)
+                dW.push(matrixmul)
+            })
             // Generate correlated increments
-            let dW = math.multiply(L, rand);
             dW = math.multiply(dW, math.sqrt(dt));
+            
 
             // Compute stock prices using GBM formula
             for (let s = 0; s < num_stocks; s++) {
-                let drift = mu[s] * prices[s][t-1][n]            
-                let diffusion = sigma[s] * prices[s][t-1][n] * dW._data[s]
-                prices[s][t][n] = prices[s][t-1][n] + drift * dt + diffusion
+                
+                let drift = mu[s] * prices[s][t - 1][n]            
+                let diffusion = sigma[s] * prices[s][t - 1][n] * dW[s]
+                let newprice = prices[s][t - 1][n] + drift * dt + diffusion
+                if (newprice <= 0) {
+                    prices[s][t][n] = prices[s][t - 1][n] + drift * dt
+                } else {prices[s][t][n] = newprice}
             }
+
         }
     }
 

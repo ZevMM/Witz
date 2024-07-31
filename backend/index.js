@@ -6,6 +6,7 @@ const pl = require('nodejs-polars');
 const axios = require('axios');
 const math = require('mathjs')
 const sim = require('./sim.js')
+const rebalance = require('./rebalancing.js')
 
 
 app.use(express.json())
@@ -166,7 +167,7 @@ app.post('/totalvalue', (request, response) => {
     if (err) {
       console.error("error", err.message);
     }
-    db.get(`SELECT * FROM user123`, function(err, row) {
+    db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {
       response.json(Object.values(row).slice(1).reduce((sum, cur) => sum += cur)  )
     });
   })
@@ -212,56 +213,106 @@ app.post('/volatility', (request, response) => {
   })
 })
 
-app.post('/diversificationratio', (request, response) => {
-  
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
-  if (stocks.length < 2) {
-    response.json({"message" : "Need > 1 asset"})
-    return
-  }
 
+app.get('/diversificationratio', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
-    db.all(`SELECT ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
-      let df = pl.DataFrame(rows)
+    db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rows) => {
+      let numassets = Object.keys(rows[0]).length - 1
+      let prices = Array(numassets).fill(0).map(a => Array(rows.length))
+      let LogReturns = Array(numassets).fill(0).map(a => Array(rows.length - 1))
+      let tv = Object.values(rows.at(-1)).slice(1).reduce((p, c) => p+c)
+      let weights = Object.values(rows.at(-1)).slice(1).map(v => v / tv)
 
-      let returns = stocks.map(s => {
-        return ({
-          "assetReturns" : df[s[0]].sub(df[s[0]][0]).cast(pl.Float32).toArray()
-        })
+      rows.forEach((row, i) => {
+        let temp = Object.values(row).slice(1)
+        temp.map((p,x) => prices[x][i] = p)
       })
 
-      let covreq = {
-        "assets": returns
+      for (let i = 1; i< rows.length; i++) {
+        for (let s = 0; s < numassets; s++) {
+          LogReturns[s][i] = prices[s][i] / prices[s][i - 1] - 1
+        }
       }
 
-
-      axios
-      .post('https://api.portfoliooptimizer.io/v1/assets/covariance/matrix', covreq)
-      .then(r => {
-        let total = stocks.reduce((sum, s) => sum += (df[s[0]][-1] * s[1]), 0)
-        let weights = stocks.map(s => df[s[0]][-1] * s[1] / total)
-        let divreq = {
-          "assets": stocks.length,
-          "assetsCovarianceMatrix": r.data.assetsCovarianceMatrix,
-          "portfolios": [
-            {
-              "assetsWeights": weights
-            }
-          ]
+      let avgs = LogReturns.map(s => s.reduce((p, c) => p+c) / s.length)
+      let covMatrix = Array(numassets).fill(0).map(a => Array(numassets).fill(0))
+      for (let a = 0; a < numassets; a++) {
+        for (let b = 0; b <= a; b++) {
+          covMatrix[a][b] = covMatrix[b][a] = LogReturns[a].reduce((prev, cur, ix) => prev + (cur - avgs[a]) * (LogReturns[b][ix] - avgs[b]), 0) / rows.length
         }
-        axios
-        .post('https://api.portfoliooptimizer.io/v1/portfolio/analysis/diversification-ratio', divreq)
-        .then( r => {
-          console.log(r.data)
+      }
+      let stdDevs = weights.map((_, i) => Math.sqrt(covMatrix[i][i]))
+      let weightXcovXweight = covMatrix.map(r => (r.map((v,i) => v * weights[i])).reduce((p,c) => p + c)).map((v,i) => v*weights[i]).reduce((p,c) => p+c)
+      stdDevs = stdDevs.map((v,i) => v * weights[i]).reduce((p,c) => p+c)
+      response.json(stdDevs / Math.sqrt(weightXcovXweight))
+
+
+
+    })
+  })
+})
+
+
+
+app.post('/diversificationratio', (request, response) => {
+  try {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+      console.error("error", err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => {
+      const allassets = rows.slice(1).map(o => o.name) 
+      if (allassets.length < 2) {
+        response.json({"message" : "Need > 1 asset"})
+        return
+      }
+      db.all(`SELECT * FROM user123`, function(err, rows) {
+        let df = []
+        rows.forEach(row => {
+          let prices = Object.values(row).slice(1)
+          df.push(prices)
         })
 
-      })
-    });
+        let returns = stocks.map(s => {
+          return ({
+            "assetReturns" : df[s[0]].sub(df[s[0]][0]).cast(pl.Float32).toArray()
+          })
+        })
+  
+        let covreq = {
+          "assets": returns
+        }
+  
+  
+        axios
+        .post('https://api.portfoliooptimizer.io/v1/assets/covariance/matrix', covreq)
+        .then(r => {
+          let total = stocks.reduce((sum, s) => sum += (df[s[0]][-1] * s[1]), 0)
+          let weights = stocks.map(s => df[s[0]][-1] * s[1] / total)
+          let divreq = {
+            "assets": stocks.length,
+            "assetsCovarianceMatrix": r.data.assetsCovarianceMatrix,
+            "portfolios": [
+              {
+                "assetsWeights": weights
+              }
+            ]
+          }
+          axios
+          .post('https://api.portfoliooptimizer.io/v1/portfolio/analysis/diversification-ratio', divreq)
+          .then( r => {
+            console.log(r.data)
+          })
+  
+        })
+      })})
   })
+ } catch (error) {
+  console.log(error)
+ }
 })
 
 
@@ -335,50 +386,55 @@ app.post('/valuepiechart', (request, response) => {
   })
 })
 
-app.post('/riskpiechart', (request, response) => {
-    
-  const portfolio = request.body
-  let stocks = portfolio[0]["data"].slice(1)
-  if (stocks.length < 2) {
-    response.json({"message" : "Need > 1 asset"})
-    return
-  }
 
+app.get('/riskpiechart', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
-    db.all(`SELECT ${stocks.map((s => s[0])).join(", ")} FROM stockprices`, function(err, rows) {  
-      let df = pl.DataFrame(rows)
+    db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rows) => {
+      let numassets = Object.keys(rows[0]).length - 1
+      let prices = Array(numassets).fill(0).map(a => Array(rows.length))
+      let LogReturns = Array(numassets).fill(0).map(a => Array(rows.length - 1))
+      let tv = Object.values(rows.at(-1)).slice(1).reduce((p, c) => p+c)
+      let weights = Object.values(rows.at(-1)).slice(1).map(v => v / tv)
 
-      let returns = stocks.map(s => {
-        return ({
-          "assetReturns" : df[s[0]].sub(df[s[0]][0]).cast(pl.Float32).toArray()
-        })
+      rows.forEach((row, i) => {
+        let temp = Object.values(row).slice(1)
+        temp.map((p,x) => prices[x][i] = p)
       })
 
-      let covreq = {
-        "assets": returns
+      for (let i = 1; i< rows.length; i++) {
+        for (let s = 0; s < numassets; s++) {
+          LogReturns[s][i] = prices[s][i] / prices[s][i - 1] - 1
+        }
       }
 
+      let avgs = LogReturns.map(s => s.reduce((p, c) => p+c) / s.length)
 
-      axios
-      .post('https://api.portfoliooptimizer.io/v1/assets/covariance/matrix', covreq)
-      .then(r => {
-        let E = math.matrix(r.data["assetsCovarianceMatrix"])
-        let total = stocks.reduce((sum, s) => sum += (df[s[0]][-1] * s[1]), 0)
-        let weights = stocks.map(s => df[s[0]][-1] * s[1] / total)
-        const covXw = math.multiply(weights, E)["_data"]
-        let Rtotal = weights.map((w, i) => w * covXw[i]).reduce((s, c) => s + c)
-        let pcts = weights.map((w, i) => {return {"name" : stocks[i][0], "value": w * covXw[i] * 100 / Rtotal}} )
-        response.json(pcts)
+      let covMatrix = Array(numassets).fill(0).map(a => Array(numassets).fill(0))
 
+      for (let a = 0; a < numassets; a++) {
+        for (let b = 0; b <= a; b++) {
+          covMatrix[a][b] = covMatrix[b][a] = LogReturns[a].reduce((prev, cur, ix) => prev + (cur - avgs[a]) * (LogReturns[b][ix] - avgs[b]), 0) / rows.length
+        }
+      }
 
+      let covXweight = covMatrix.map(r => (r.map((v,i) => v * weights[i])).reduce((p,c) => p + c))
+      let riskContributions = covXweight.map((v,i) => v * weights[i])
+      //no need to calculate portfolio volatility because I just want to know the relative contributions
+      
 
-      })
-    });
+      let Rtotal = riskContributions.reduce((p,c) => p+c)
+      let names = Object.keys(rows[0]).slice(1)
+      let pcts = weights.map((w, i) => {return {"name" : names[i], "value": riskContributions[i] * 100 / Rtotal}} )
+      
+      response.json(pcts)
+
+    })
   })
 })
+
 
 app.post('/tstable', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
@@ -417,94 +473,141 @@ app.post('/linegraph', (request, response) => {
 
 
 app.post('/simulate', (request, response) => {
-  let toReturn = []
 
-  const quantile = (sorted, q) => {
-    const pos = (sorted.length - 1) * q;
-    const base = Math.floor(pos);
-    const rest = pos - base;
-    if (sorted[base + 1] !== undefined) {
-        return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
-    } else {
-        return sorted[base];
-    }
-  };
-
-  const portfolio = request.body.portfolio
-  const names = request.body.names
-  const events = request.body.events
-  const numsims = parseInt(request.body.numsims)
-  const numsteps = parseInt(request.body.numsteps)
-  let stocks = portfolio[0]["data"].slice(1)
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT ${stocks.map((s => s[0])).join(", ")}, ${names.join(",")} FROM monthlyStock INNER JOIN indices ON monthlyStock.date = indices.DATE `, function(err, rows) {
-      let df = pl.DataFrame(rows)
-      let drifts = []
-      let vols = []
-      let starts = []
-      let allLogReturns = []
-      
-      df.columns.forEach(
-        col => {
-          let logReturns = [];
-          col = df[col].toArray()
-          for (let i = 1; i < col.length; i++) {
-            let rt = Math.log(col[i] / col[i - 1]);
-            logReturns.push(rt);
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => {
+      const allassets = rows.slice(1).map(o => o.name) 
+      db.get("SELECT * FROM user123 ORDER BY Date DESC", (err, row) => {
+        const initvalues = Object.values(row).slice(1)
+        let toReturn = []
+  
+        const quantile = (sorted, q) => {
+          const pos = (sorted.length - 1) * q;
+          const base = Math.floor(pos);
+          const rest = pos - base;
+          if (sorted[base + 1] !== undefined) {
+              return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+          } else {
+              return sorted[base];
           }
-          drifts.push(math.mean(logReturns))
-          vols.push(math.std(logReturns))
-          starts.push(col[0])
-          allLogReturns.push(logReturns)
-        }
-      )
-      let covMatrix = new Array(drifts.length).fill(0).map(() => new Array(drifts.length).fill(1))
-      for (let i = 1; i < drifts.length; i++){
-        for (let n = 0; n < i; n++) {
-          let cov = allLogReturns[i].reduce((sum, val, indx) => sum + (val - drifts[i]) * (allLogReturns[n][indx] - drifts[n]), 0) / (allLogReturns[i].length - 1)
-          covMatrix[i][n] = cov 
-          covMatrix[n][i] = cov
-        }
-      }
-      
-      simData = sim.GBM(drifts, vols, numsims, stocks.length, numsteps, starts, covMatrix, names.length, events)
-
-      if (numsims > 1){
-        for (let i = 0; i < numsteps; i++){
-          let entry = {"date": i}
-          let allprices = []
-          for (let p =0; p< numsims; p++) {
-            let tot = 0
-            for (let n = 0; n < stocks.length; n++){
-              tot += simData[n][i][p]
+        };
+        
+        const names = request.body.names
+        const events = request.body.events
+        const reb = request.body.rebalance
+        const numsims = parseInt(request.body.numsims)
+        const numsteps = parseInt(request.body.numsteps)
+        const levs = request.body.levs
+          db.all(`SELECT ${allassets.concat(names).join(",")} FROM monthlyStock INNER JOIN indices ON monthlyStock.Date = indices.DATE
+          INNER JOIN ETFs ON indices.DATE = ETFs.Date
+          INNER JOIN crypto ON ETFs.Date = crypto.Date
+          INNER JOIN currency ON crypto.Date = currency.Date
+          INNER JOIN mutualFunds ON currency.Date = mutualFunds.Date
+          INNER JOIN realEstate ON realEstate.Date = mutualFunds.Date`, function(err, rows) {
+  
+            
+            let df = pl.DataFrame(rows)
+            let drifts = []
+            let vols = []
+            let starts = []
+            let allLogReturns = []
+            
+            df.columns.forEach(
+              col => {
+                let logReturns = [];
+                col = df[col].toArray()
+                for (let i = 1; i < col.length; i++) {
+                  let rt = Math.log(col[i] / col[i - 1]);
+                  logReturns.push(rt);
+                }
+                drifts.push(math.mean(logReturns))
+                vols.push(math.std(logReturns))
+                starts.push(col[0])
+                allLogReturns.push(logReturns)
+              }
+            )
+            let covMatrix = new Array(drifts.length).fill(0).map(() => new Array(drifts.length).fill(1))
+            let lagMatrix = new Array(drifts.length).fill(0).map(() => new Array(drifts.length).fill(0))
+            
+            for (let i = 0; i < drifts.length; i++){
+              for (let n = 0; n <= i; n++) {
+                
+                let a = allLogReturns[i]
+                let b = allLogReturns[n]
+                let maxcov = a.reduce((sum, val, indx) => sum + (val - drifts[i]) * (b[indx] - drifts[n]), 0) / (a.length - 1)
+                for (let l = 1; l < 4; l ++) {
+                  let cova = a.slice(l).reduce((sum, val, indx) => sum + (val - drifts[i]) * (b[indx] - drifts[n]), 0) / (a.length - 1 - l)
+                  console.log("cova", cova)
+                  if (Math.abs(cova) > maxcov) {
+                    maxcov = cova
+                    lagMatrix[i][n] = -l
+                    lagMatrix[n][i] = l
+                  }
+                  let covb = b.slice(l).reduce((sum, val, indx) => sum + (val - drifts[n]) * (a[indx] - drifts[i]), 0) / (b.length - 1 - l)
+                  console.log("covb", covb)
+                  if (Math.abs(covb) > maxcov) {
+                    maxcov = covb
+                    lagMatrix[n][i] = -l
+                    lagMatrix[i][n] = l
+                  }
+  
+                }
+  
+                covMatrix[i][n] = maxcov 
+                covMatrix[n][i] = maxcov
+              }
             }
-            entry[`tot${p}`] = tot
-            allprices.push(tot)
-          }
-          allprices = allprices.sort((a, b) => a - b);
-          entry["quantile25"] = quantile(allprices, 0.25)
-          entry["quantile75"] = quantile(allprices, 0.75)
-          toReturn.push(entry)
-        }
-        console.log(toReturn)
-        response.json(toReturn)
-        return
-      }
-
-      for (let i = 0; i < numsteps; i++){
-        let entry = {"date": i}
-        
-        for (let n = 0; n < stocks.length; n++){
-          for (let p =0; p< numsims; p++) {
-          entry[stocks[n][0]] = simData[n][i][p]
-          }
-        }
-        
-        toReturn.push(entry)
-      }
-      response.json(toReturn)
+            console.log(covMatrix)
+            console.log(lagMatrix)
+  
+            let simData = sim.GBM(drifts, vols, numsims, allassets.length, numsteps, starts, covMatrix, names.length, events, lagMatrix)
+            if (levs.some(ele => ele != 1)) {simData = rebalance.lever(simData, initvalues, numsims, numsteps, levs)}
+            if (reb) {simData = rebalance.rebalance(simData, numsims, initvalues, numsteps)}
+            else {simData = rebalance.weight(simData, initvalues)}
+      
+            if (numsims > 1){
+              for (let i = 0; i < numsteps; i++){
+                let entry = {"date": i}
+                let allprices = []
+                for (let p =0; p< numsims; p++) {
+                  let tot = 0
+                  for (let n = 0; n < allassets.length; n++){
+                    tot += simData[n][i][p]
+                  }
+                  entry[`tot${p}`] = tot
+                  allprices.push(tot)
+                }
+                allprices = allprices.sort((a, b) => a - b);
+                entry["quantile25"] = quantile(allprices, 0.25)
+                entry["quantile75"] = quantile(allprices, 0.75)
+                toReturn.push(entry)
+              }
+              console.log(toReturn)
+              response.json(toReturn)
+              return
+            }
+      
+            for (let i = 0; i < numsteps; i++){
+              let entry = {"date": i}
+              
+              for (let n = 0; n < allassets.length; n++){
+                for (let p =0; p< numsims; p++) {
+                entry[allassets[n][0]] = simData[n][i][p]
+                }
+              }
+              
+              toReturn.push(entry)
+            }
+            response.json(toReturn)
+        })
+      })
     })
   })
+
+
 })
 
 app.get('/myportfolio', (request, response) => {

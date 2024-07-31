@@ -67,7 +67,7 @@ const Widget3 = ({portfolio}) => {
     const [data, setData] = useState("loading...")
     useEffect(() => {
         axios
-        .post('http://localhost:3001/diversificationratio', portfolio)
+        .get('http://localhost:3001/diversificationratio')
         .then(response => {
             console.log(response.data)
             setData(response.data)

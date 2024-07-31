@@ -8,7 +8,7 @@ const RenderRiskChart = ({portfolio}) => {
   
   useEffect(() => {
     axios
-    .post('http://localhost:3001/riskpiechart', portfolio)
+    .get('http://localhost:3001/riskpiechart')
     .then(response => {
         console.log(response.data)
         setData(response.data)

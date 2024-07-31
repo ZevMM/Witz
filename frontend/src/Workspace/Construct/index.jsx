@@ -7,7 +7,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
-function Construct({full, setFull, portfolio, setPortfolio}) {
+function Construct({full, setFull, portfolio, setPortfolio, levs, setLevs}) {
 
     const [side, setSide] = useState('')
 
@@ -72,7 +72,7 @@ function Construct({full, setFull, portfolio, setPortfolio}) {
               <Canvas portfolio={portfolio} collapse={collapse}/>
             </DndContext>
         </div>
-        <SideBar type={side} portfolio={portfolio} setPortfolio={setPortfolio} />
+        <SideBar type={side} portfolio={portfolio} setPortfolio={setPortfolio} levs={levs} setLevs={setLevs} />
       </div>
   )
 }

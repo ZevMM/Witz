@@ -5,7 +5,7 @@ import Canvas from './Canvas'
 
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
-function Simulate({full, setFull, report, portfolio, simprops}) {
+function Simulate({full, setFull, report, portfolio, simprops, levs}) {
 
     
     const [side, setSide] = useState('')
@@ -45,7 +45,7 @@ function Simulate({full, setFull, report, portfolio, simprops}) {
             <Canvas simprops={simprops} />
         </div>
         
-        <SideBar  type={side} portfolio={portfolio}  simprops={simprops}/>
+        <SideBar  type={side} portfolio={portfolio}  simprops={simprops} levs={levs}/>
       </div>
   )
 }

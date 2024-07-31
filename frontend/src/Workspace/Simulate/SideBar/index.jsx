@@ -21,13 +21,13 @@ const getTaskPos = (id, portfolio) => {
   return portfolio.findIndex(element => element.id == id)
 }
 
-const runSim = (e, setSimData, portfolio, all, events, setView) => {
+const runSim = (e, setSimData, all, events, setView, levs) => {
   e.preventDefault()
   let numsteps = e.target.numsteps.value
   let type = e.target.type.value
   let rebalance = e.target.rebalance.checked
   let numsims = (type == "montecarlo") ? e.target.numsims.value : 1
-
+  console.log(all)
 
   let formatted = {}
   let names = {}
@@ -58,7 +58,7 @@ const runSim = (e, setSimData, portfolio, all, events, setView) => {
   }
   console.log(formatted)
   axios
-  .post('http://localhost:3001/simulate', {portfolio: portfolio, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps})
+  .post('http://localhost:3001/simulate', {levs: levs, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps, rebalance: rebalance})
   .then(response => {
     console.log(response)
     setSimData(response.data)
@@ -94,7 +94,8 @@ const handleSubmit = (e, id, setID, mevents, mall, setMevents, setMall, mlayout,
 const indices = ["PNRGINDEXM",	"USEPUINDXD",	"GEPUCURRENT",	"CPIAUCSL",	"CORESTICKM159SFRBATL",	"AMBOR30",	"AMERIBOR",	"MORTGAGE30US",	"FEDFUNDS",	"SP500",	"DJIA",	"APU0000704111",	"DEXUSEU",	"BOGMBASE",	"COMPOUT",	"IHLIDXUSTPSOFTDEVE",	"BBKMGDP",	"WEI",	"ACTLISCOUUS"]
 
 
-function SideBar({type, portfolio, simprops}) {
+function SideBar({type, portfolio, simprops, levs}) {
+  console.log("levs", levs)
   let range, setSimData, mall, mevents, setMall, setMevents, mlayout, setMlayout, setView;
   ({range, setSimData, mall, mevents, setMall, setMevents, mlayout, setMlayout, setView} = simprops)
   const [id, setID] = useState(0)
@@ -122,7 +123,7 @@ function SideBar({type, portfolio, simprops}) {
           <h3>Control Panel</h3>
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
 
-          <form style={{width:"75%"}} onSubmit={(e) => runSim(e, setSimData, portfolio, mall, mevents, setView)}>
+          <form style={{width:"75%"}} onSubmit={(e) => runSim(e, setSimData, mall, mevents, setView, levs)}>
           <div className="label">Time Steps</div>
           <input type="number" name="numsteps"  className="siminput" required/>
           <div className="label">Type</div>
