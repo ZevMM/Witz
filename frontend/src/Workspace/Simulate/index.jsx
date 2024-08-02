@@ -42,7 +42,9 @@ function Simulate({full, setFull, report, portfolio, simprops, levs}) {
                 </div>
                 <FullButton />
             </div>
+            <div style={{display:"flex", flex:"1", overflowY:"auto", flexDirection:"column"}}>
             <Canvas simprops={simprops} />
+            </div>
         </div>
         
         <SideBar  type={side} portfolio={portfolio}  simprops={simprops} levs={levs}/>

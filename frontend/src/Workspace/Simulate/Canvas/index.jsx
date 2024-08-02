@@ -109,7 +109,7 @@ const colors= ["#024959ff", "#f2e205ff", "#f2b705ff", "#f28705ff", "#f26430ff", 
 const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
   if (view == "stack") {
     return (
-      <ResponsiveContainer height="100%" width="100%">
+      <ResponsiveContainer height="500px" width="100%">
         <AreaChart
         width={500}
         height={300}
@@ -136,10 +136,8 @@ const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
     )
   } 
   return (
-    <ResponsiveContainer height="100%" width="100%">
+    <ResponsiveContainer height={"100%"}>
       <LineChart
-      width={500}
-      height={300}
       data={data}
       stackOffset="sign"
       margin={{
@@ -167,39 +165,46 @@ const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
   )
 }
 
+const EventBar=({simprops}) => {
+  let view, simData, mevents, mall, setMall, mlayout, setMlayout, range, setRange;
+  ({view, simData, mevents, mall, setMall, mlayout, setMlayout, range, setRange} = simprops)
+  return (
+  <div style={{margin:"5px", paddingBottom: "10px"}} onFocus={() => Open(range, setRange, mall, setMlayout)} onBlur={() => Mcollapse(mlayout, mall, range, setMall, setMlayout)} tabIndex={-1}>
+    <ReactGridLayout
+          className="layout"
+          layout= {mlayout}
+          allowOverlap = {true}
+          cols={(range.endIndex - range.startIndex + 1)}
+          rowHeight={25}
+          onLayoutChange={(l) => {setMlayout(l)
+          }}
+          style={{background:"#434343ff"}}
+        >
+          {mlayout.map(cb => {
+            const id = cb.i
+            return(<div className={
+              (id.includes("invis")? "invis": id.includes("green") ? "macro_up" : "macro_down")}
+              key={id}>{id.includes("invis") ? null : mevents[id].subj}</div>)
+        })}
+    </ReactGridLayout>
+  </div>)
+}
+
+
 const Canvas = ({simprops}) => {
 
   let view, simData, mevents, mall, setMall, mlayout, setMlayout, range, setRange;
   ({view, simData, mevents, mall, setMall, mlayout, setMlayout, range, setRange} = simprops)
 
   return (
-  <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column", overflowY:"auto", marginBottom:"100px"}}>
+    <>
     <div style={{flex:"1"}}>
-    
     <Chart view={view} data={simData} range={range} setRange={setRange} mall={mall} setMlayout={setMlayout} />
-
     </div>
-    <div style={{margin:"5px", flex:"0"}} onFocus={() => Open(range, setRange, mall, setMlayout)} onBlur={() => Mcollapse(mlayout, mall, range, setMall, setMlayout)} tabIndex={-1}>
-      <ReactGridLayout
-            className="layout"
-            layout= {mlayout}
-            allowOverlap = {true}
-            cols={(range.endIndex - range.startIndex + 1)}
-            rowHeight={25}
-            onLayoutChange={(l) => {setMlayout(l)
-            }}
-            style={{background:"#434343ff"}}
-          >
-            {mlayout.map(cb => {
-              const id = cb.i
-              return(<div className={
-                (id.includes("invis")? "invis": id.includes("green") ? "macro_up" : "macro_down")}
-                key={id}>{id.includes("invis") ? null : mevents[id].subj}</div>)
-          })}
-      </ReactGridLayout>
+    <div style={{flex:"0 0 120px", overflowY:"auto"}}>
+    <EventBar simprops={simprops}/>
     </div>
-  </div>
-
+    </>
 );}
 
 export default Canvas
