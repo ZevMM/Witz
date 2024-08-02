@@ -29,9 +29,25 @@ function App() {
       .post('http://localhost:3001/adduser', {name: "user123"})
   }, []);
 
-  const [mall, setMall] = useState([])
+  const [mall, setMall] = useState(Array(50).fill(0).map((a,i) => { return {
+    "w": 1,
+    "h": 1,
+    "x": i,
+    "y": 0,
+    "i": `invis${i}`,
+    "moved": false,
+    "static": true
+}}))
   const [view, setView] = useState("sep")
-  const [mlayout, setMlayout] = useState([...mall])
+  const [mlayout, setMlayout] = useState( Array(50).fill(0).map((a,i) => { return {
+    "w": 1,
+    "h": 1,
+    "x": i,
+    "y": 0,
+    "i": `invis${i}`,
+    "moved": false,
+    "static": true
+}}))
   const [mevents, setMevents] = useState({})
   const [simData, setSimData] = useState(Array(50).fill({
       "name": "Page A",

@@ -17,6 +17,8 @@ import RGL, { WidthProvider } from "react-grid-layout";
 
 const ReactGridLayout = WidthProvider(RGL);
 
+
+
 const Open = (e, setRange, pall, setLayout) => {
   const min = e.startIndex
   const max = e.endIndex
@@ -37,6 +39,7 @@ const handleRangeChange = (e, range, setRange, mall, setMlayout) => {
   setMlayout(mall.filter(ele => ele.x >= min & (ele.x + ele.w) <= max).map(ele => {
     let copy = {...ele}
     copy.x -= min
+    copy.y = 0
     return copy
   }))
 }
@@ -102,7 +105,7 @@ const Mcollapse = (mlayout, mall, range, setMall, setMlayout) => {
   })
   setMlayout(newl)
 }
-const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
+const colors= ["#024959ff", "#f2e205ff", "#f2b705ff", "#f28705ff", "#f26430ff", "#f29c50ff", "#99d9f2ff", "#5eadf2ff", "#0476d9ff", "#0460d9ff"]
 const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
   if (view == "stack") {
     return (
@@ -127,7 +130,7 @@ const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
         <YAxis style={{fontSize:"small"}}/>
         <Tooltip />
         <ReferenceLine y={0} stroke="#000" />
-        <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, mall, setMlayout)}/>
+        <Brush dataKey="name" height={30} stroke="#666666" onChange={(e) => handleRangeChange(e, range, setRange, mall, setMlayout)}/>
       </AreaChart>
       </ResponsiveContainer>
     )
@@ -146,8 +149,10 @@ const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
         bottom: 5,
       }}
     >
-      {Object.keys(data[0]).slice(1).map(v => { return (v.includes("quantile") ? (<Line type="linear" dataKey={v} dot={false} stroke={"red"}/>) :
-        (<Line type="linear" dataKey={v} dot={false}/>))
+      {Object.keys(data[0]).slice(1).map((v,i) => { 
+        if (v.includes("tot")) {return (<Line type="linear" dataKey={v} dot={false} stroke={"black"}/>)}
+        return (v.includes("quantile") ? (<Line type="linear" dataKey={v} dot={false} stroke={"red"}/>) :
+        (<Line type="linear" dataKey={v} dot={false} stroke={colors[i % colors.length]}/>))
         })}
       
       <CartesianGrid strokeDasharray="3 3" />
@@ -156,7 +161,7 @@ const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
       <YAxis style={{fontSize:"small"}}/>
       <Tooltip />
       <ReferenceLine y={0} stroke="#000" />
-      <Brush dataKey="name" height={30} stroke="#8884d8" onChange={(e) => handleRangeChange(e, range, setRange, pall, setLayout, mall, setMlayout, setMall)}/>
+      <Brush dataKey="name" height={30} stroke="#666666" onChange={(e) => handleRangeChange(e, range, setRange, mall, setMlayout)}/>
     </LineChart>
     </ResponsiveContainer>
   )
@@ -187,7 +192,9 @@ const Canvas = ({simprops}) => {
           >
             {mlayout.map(cb => {
               const id = cb.i
-              return(<div className={(id.includes("green") ? "macro_up" : "macro_down")} key={id}>{mevents[id].subj}</div>)
+              return(<div className={
+                (id.includes("invis")? "invis": id.includes("green") ? "macro_up" : "macro_down")}
+                key={id}>{id.includes("invis") ? null : mevents[id].subj}</div>)
           })}
       </ReactGridLayout>
     </div>

@@ -18,8 +18,7 @@ function Workspace({mode, full, setFull, simprops, levs, setLevs, portfolio, set
     data6 : null
   })
 
-  const [layout, setLayout] = useState([
-  ])
+  const [layout, setLayout] = useState()
 
   const [isUpdated, setIsUpdated] = useState(false)
 
