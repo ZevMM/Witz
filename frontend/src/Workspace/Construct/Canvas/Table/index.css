@@ -49,7 +49,7 @@ th {
     font-weight: 400;
 }
 
-tbody tr:nth-child(odd) {
+.assettable > tbody tr:nth-child(odd) {
     background-color: #d9d9d9ff;
 }
 

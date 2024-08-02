@@ -7,7 +7,8 @@ import axios from 'axios'
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
 function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsUpdated, report, setReport}) {
-
+    console.log(layout)
+    /*
     useEffect(() => {
         if (!isUpdated) {
             axios
@@ -18,7 +19,7 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
             setIsUpdated(true);
         } else {
         }
-    }, [])
+    }, [])*/
 
     const [side, setSide] = useState('')
 

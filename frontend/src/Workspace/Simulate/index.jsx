@@ -6,7 +6,7 @@ import Canvas from './Canvas'
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
 function Simulate({full, setFull, report, portfolio, simprops, levs}) {
-
+    console.log(portfolio)
     
     const [side, setSide] = useState('')
  

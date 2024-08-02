@@ -8,7 +8,6 @@ import { arrayMove } from '@dnd-kit/sortable'
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
 function Construct({full, setFull, portfolio, setPortfolio, levs, setLevs}) {
-
     const [side, setSide] = useState('')
 
     const collapse = (id) => {

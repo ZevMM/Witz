@@ -6,30 +6,30 @@ import axios from 'axios'
 const CheckboxDropdown = ({all, assets, setAssets}) => {
     
     return(
-    <div style={{position:"absolute", top:"20px", background:"white", width:"100%", borderRadius:"10px", boxShadow:"0px 5px 5px #888"}}>
+    <div style={{position:"absolute", top:"20px", background:"white", width:"120%", borderRadius:"10px", boxShadow:"0px 5px 5px #888"}}>
         <div style={{maxHeight:"150px", overflowY:"auto", fontSize: "12px", color:"#666666", display:"flex", flexDirection:"column"}}>
         {
             all.map(a => {
 
-                const isChecked = assets.filter(b => b[0] === a[0])
+                const isChecked = assets.includes(a)
 
-                if (isChecked.length > 0) {
+                if (isChecked) {
                     return(
                         <div>
-                            <input type="checkbox" id={`tst${a[0]}`} onChange={(e) => {
-                                setAssets(assets.filter(b => b[0] !== a[0]))}} checked/>
-                            <label for={`tst${a[0]}`}>{a[0]}</label>
+                            <input type="checkbox" id={`tst${a}`} onChange={(e) => {
+                                setAssets(assets.filter(b => b != a))}} checked/>
+                            <label for={`tst${a}`}>{a}</label>
                         </div>
                     )
                 }
                 
                 return(
                     <div>
-                        <input type="checkbox" id={`tst${a[0]}`} onChange={(e) => {
+                        <input type="checkbox" id={`tst${a}`} onChange={(e) => {
   
                             setAssets([...assets, a])}
                          } />
-                        <label for={`tst${a[0]}`}>{a[0]}</label>
+                        <label for={`tst${a}`}>{a}</label>
                     </div>
                 )
 
@@ -43,10 +43,9 @@ const CheckboxDropdown = ({all, assets, setAssets}) => {
 
 
 
-const AssetSelect = ({portfolio, assets, setAssets, filter, setFilter}) => {
+const AssetSelect = ({activeAssets, setActiveAssets, assets, filter, setFilter}) => {
     const [active, setActive] = useState(false)
-    let toShow = portfolio[0]["data"].slice(1).filter(a => a[0].includes(filter))
- 
+    
     return (
     <div style={{position:"relative", display:"flex", alignItems:"center", marginLeft:"30px", height:"20px"}}
     onFocus={() => {
@@ -59,9 +58,9 @@ const AssetSelect = ({portfolio, assets, setAssets, filter, setFilter}) => {
             setActive(false)
         }
         }} tabIndex={-1}>
-        <input value={filter} onChange={(e) => setFilter(e.target.value)} style={{width:"60px", borderRadius:"0", border:"1px solid rgb(102, 102, 102)", color: "rgb(102, 102, 102)", fontSize:"12px", height:"20px", paddingLeft: "4px" }} />
+        <input value={filter} onChange={(e) => setFilter(e.target.value)} style={{width:"80px", borderRadius:"0", border:"1px solid rgb(102, 102, 102)", color: "rgb(102, 102, 102)", fontSize:"12px", height:"20px", paddingLeft: "4px" }} />
         
-        {active? <CheckboxDropdown all={toShow} assets={assets} setAssets={setAssets}/> : null}
+        {active? <CheckboxDropdown all={assets.filter(a => a.includes(filter))} assets={activeAssets} setAssets={setActiveAssets}/> : null}
     </div>
 )}
 
@@ -73,32 +72,32 @@ function convertDateFormat(dateString) {
     const shortYear = year.slice(2);
     
     // Return the date in mm-dd-yy format
-    return `${month}-${day}`;
+    return `${month}-${day}-${shortYear}`;
 }
 
 
 const StatTable = ({portfolio}) => {
     
     const [data, setData] = useState(null)
-    const [range, setRange] = useState(59)
-    const [freq, setFreq] = useState(1)
+    const [range, setRange] = useState(36)
+    const [freq, setFreq] = useState(3)
     const [assets, setAssets] = useState([])
+    const [activeAssets, setActiveAssets] = useState([])
     const [filter, setFilter] = useState("Select")
 
     useEffect(() => {
         axios.get('http://localhost:3001/myportfolio')
-        .then(response =>
+        .then(response => {
           setAssets(response.data)
-        )
+          setActiveAssets(response.data)
+        })
       }, [])
 
     useEffect(()=> {
         axios
         .post('http://localhost:3001/tstable', portfolio)
         .then((response) => {
-            console.log(response.data)
             setData(response.data)
-
         })
     }, [])
     
@@ -116,25 +115,23 @@ const StatTable = ({portfolio}) => {
             <span style={{color: "black", paddingRight:"10px"}} className="MyDragHandleClassName">⁝⁝</span> 
             <span>Time-Series Table</span>
             
-            <AssetSelect portfolio={portfolio} assets={assets} setAssets={setAssets} filter={filter} setFilter={setFilter}/>
+            <AssetSelect activeAssets={activeAssets} setActiveAssets={setActiveAssets} assets={assets} filter={filter} setFilter={setFilter}/>
 
 
             <select style={{marginLeft:"30px", borderRadius:"0", border:"1px solid #666666", fontSize:"12px", color:"#666666", height:"21.6px"}} name="range" id="range"
             onChange={(e) => setRange(parseInt(e.target.value))}>
-                <option value="251">1Y</option>
-                <option value="126">6M</option>
-                <option value="63">3M</option>
-                <option value="21">1M</option>
+              <option value="60">5Y</option>
+              <option value="36" selected>3Y</option>
+              <option value="12">1Y</option>
             </select>
 
 
 
             <select style={{marginLeft:"30px", borderRadius:"0", border:"1px solid #666666", fontSize:"12px", color:"#666666", height:"21.6px"}} name="frequency" id="frequency"
             onChange={(e) => setFreq(parseInt(e.target.value))}>
-                <option value="21">Monthly</option>
-                <option value="10">Bimonthly</option>
-                <option value="5">Weekly</option>
-                <option value="1">Daily</option>
+                <option value="12">Yearly</option>
+                <option value="3" selected>Quarterly</option>
+                <option value="1">Monthly</option>
             </select>
 
         </div>
@@ -155,7 +152,7 @@ const StatTable = ({portfolio}) => {
                 </thead>
                 <tbody>
 
-                    {assets.map(a => {
+                    {activeAssets.map(a => {
 
                         let temp = []
                         for (let i = data[a].length - range; i < data[a].length; i+=freq) {
@@ -165,7 +162,7 @@ const StatTable = ({portfolio}) => {
                         return(
                             <tr>
                                 <td>{a}</td>
-                                {temp.map(v => <td>{v}</td>)}
+                                {temp.map(v => <td>{v.toFixed(2)}</td>)}
                             </tr>
                         )
                     })}

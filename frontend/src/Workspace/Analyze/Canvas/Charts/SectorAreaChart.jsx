@@ -60,38 +60,30 @@ const AssetSelect = ({filter, setFilter, allnames, active, setActive}) => {
   </div>
 )}
 
-const RenderAreaChart = ({portfolio}) => {
+const RenderSectorChart = ({portfolio}) => {
   const [data, setData] = useState(null)
   const [showing, setShowing] = useState(null)
-  const [allnames, setAllNames] = useState([])
-  const [active, setActive] = useState([])
+  const [allnames, setAllNames] = useState(portfolio.map(cat => cat.title))
+  const [active, setActive] = useState(portfolio.filter(cat => cat.data.length > 1).map(cat => cat.title))
   const [filter, setFilter] = useState('Select')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/myportfolio')
-    .then(response => {
-      setAllNames(response.data)
-      setActive(response.data.slice(0,5))
-    })
-  }, [])
-
-  useEffect(() => {
     axios
-    .post('http://localhost:3001/areachart', portfolio)
+    .post('http://localhost:3001/sectorchart', portfolio)
     .then(response => {
         setData(response.data)
         setShowing(response.data)
     })
   }, [])
 
-    const colors = ["#024959ff", "#f2e205ff", "#f2b705ff", "#f28705ff", "#f26430ff", "#f29c50ff", "#99d9f2ff", "#5eadf2ff", "#0476d9ff", "#0460d9ff"]
+    const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
 
 
     return (
         <div style={{display:"flex", width:"100%", height:"100%", flexDirection:"column"}}>
 
           <div style={{color: "black", padding:"10px", flex:"0", backgroundColor:"#f3f3f3ff", margin:"3px", boxShadow: "0 2px 2px -2px rgb(0, 0, 0)", display:"flex", flexDirection:"row", alignItems:"center"}}>
-            <span style={{color: "black", paddingRight:"10px"}} className="MyDragHandleClassName">⁝⁝</span> Value by Asset
+            <span style={{color: "black", paddingRight:"10px"}} className="MyDragHandleClassName">⁝⁝</span> Value by Sector
             
             <AssetSelect filter={filter} setFilter={setFilter} allnames={allnames} active={active} setActive={setActive}/>
 
@@ -128,4 +120,4 @@ const RenderAreaChart = ({portfolio}) => {
       );
     }
 
-export default RenderAreaChart
+export default RenderSectorChart

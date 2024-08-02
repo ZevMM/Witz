@@ -73,7 +73,6 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
       <div onFocus={() => setDrop(true)}
       onBlur={(e) => {
             if (!e.currentTarget.contains(e.relatedTarget)) {
-              console.log(e.currentTarget, e.relatedTarget)
               setDrop(false)
             }
             }} tabindex="-1"
