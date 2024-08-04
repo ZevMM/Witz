@@ -33,8 +33,9 @@ const runSim = (e, setSimData, all, events, setView, levs) => {
   let names = {}
   let count = 0
   all.forEach(ele => {
+    if (ele.i.includes("invis")) {return}
     let s = events[ele.i].subj
-    let p = events[ele.i].pct
+    let p = events[ele.i].pct / 100
     if (p > 0) {
       p = ((1+p) ** (1 / ele.w)) - 1
     } else {

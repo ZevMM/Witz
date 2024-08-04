@@ -179,7 +179,6 @@ app.get('/corrmatrix', (request, response) => {
           covMatrix[n][i] = maxcov
         }
       }
-
       let stdDevs = weights.map((_, i) => Math.sqrt(covMatrix[i][i]))
       for (let a = 0; a < numassets; a++) {
         for (let b = 0; b <= a; b++) {
@@ -529,7 +528,7 @@ app.post('/simulate', (request, response) => {
         const numsims = parseInt(request.body.numsims)
         const numsteps = parseInt(request.body.numsteps)
         const levs = request.body.levs
-          db.all(`SELECT ${allassets.concat(names).join(",")} FROM monthlyStock INNER JOIN indices ON monthlyStock.Date = indices.DATE
+          db.all(`SELECT ${names.concat(allassets).join(",")} FROM monthlyStock INNER JOIN indices ON monthlyStock.Date = indices.DATE
           INNER JOIN ETFs ON indices.DATE = ETFs.Date
           INNER JOIN crypto ON ETFs.Date = crypto.Date
           INNER JOIN currency ON crypto.Date = currency.Date
@@ -588,12 +587,14 @@ app.post('/simulate', (request, response) => {
                 covMatrix[n][i] = maxcov
               }
             }
-  
+            
+
             let simData = sim.GBM(drifts, vols, numsims, allassets.length, numsteps, starts, covMatrix, names.length, events, lagMatrix)
+            
             if (levs.some(ele => ele != 1)) {simData = rebalance.lever(simData, initvalues, numsims, numsteps, levs)}
             if (reb) {simData = rebalance.rebalance(simData, numsims, initvalues, numsteps)}
             else {simData = rebalance.weight(simData, initvalues)}
-      
+            
             if (numsims > 1){
               for (let i = 0; i < numsteps; i++){
                 let entry = {"date": i}
@@ -614,7 +615,6 @@ app.post('/simulate', (request, response) => {
               response.json(toReturn)
               return
             }
-            console.log("all assets", allassets )
             for (let i = 0; i < numsteps; i++){
               let entry = {"date": i}
               

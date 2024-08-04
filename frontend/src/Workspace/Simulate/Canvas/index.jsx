@@ -109,7 +109,7 @@ const colors= ["#024959ff", "#f2e205ff", "#f2b705ff", "#f28705ff", "#f26430ff", 
 const Chart = ({view, data, range, setRange, mall, setMlayout}) => {
   if (view == "stack") {
     return (
-      <ResponsiveContainer height="500px" width="100%">
+      <ResponsiveContainer height="100%">
         <AreaChart
         width={500}
         height={300}
