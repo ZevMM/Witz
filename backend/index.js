@@ -17,11 +17,19 @@ app.use(cors())
 
 
 app.post('/totalvalue', (request, response) => {
+  console.log("total value requested")
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
+      response.json({"error": err})
+      return
     }
     db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {
+      if (err) {
+        console.error("error", err.message);
+        response.json({"error": err})
+        return
+      }
       response.json(Object.values(row).slice(1).reduce((sum, cur) => sum += cur).toFixed(2))
     });
   })
@@ -264,7 +272,6 @@ app.post('/sectorchart', (request, response) => {
             
           }
         })
-        console.log(entry)
         toReturn.push(entry)
       })
       response.json(toReturn)
@@ -587,11 +594,20 @@ app.post('/simulate', (request, response) => {
                 covMatrix[n][i] = maxcov
               }
             }
+
+            let stdDevs = drifts.map((_, i) => Math.sqrt(covMatrix[i][i]))
+            for (let a = 0; a < drifts.length; a++) {
+              for (let b = 0; b <= a; b++) {
+                let corr = covMatrix[a][b] / (stdDevs[a] * stdDevs[b])
+                covMatrix[a][b] = covMatrix[b][a] = corr
+              }
+            }
+            
             
 
             let simData = sim.GBM(drifts, vols, numsims, allassets.length, numsteps, starts, covMatrix, names.length, events, lagMatrix)
             
-            if (levs.some(ele => ele != 1)) {simData = rebalance.lever(simData, initvalues, numsims, numsteps, levs)}
+            /*if (levs.some(ele => ele != 1)) {simData = rebalance.lever(simData, initvalues, numsims, numsteps, levs)}*/
             if (reb) {simData = rebalance.rebalance(simData, numsims, initvalues, numsteps)}
             else {simData = rebalance.weight(simData, initvalues)}
             
@@ -715,25 +731,29 @@ app.post('/adduser', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
+        response.json({"message":"error"})
+        return
     }
     db.run(`DROP TABLE IF EXISTS ${user}`, err => {
       db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
         if (err) {
           console.log(err.message)
+          response.json({"message":"error"})
           return
         }
-        db.all(`SELECT Date FROM monthlyStock`, (err, rows) => {
-          rows.forEach(row => {
+        db.each(`SELECT Date FROM monthlyStock`, (err, row) => {
             db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {
               if (err) {
                 console.error(err.message);
+                response.json({"message":"error"})
+                return
             }})
-          })
+        }, () => {
+          response.json({"message":"success"})
         })
       })
     })
   })
-  response.json({"message":"success"})
 })
 
 app.post('/deleteuser', (request, response) => {
@@ -761,37 +781,60 @@ app.post('/portfolioAdd', (request, response) => {
   date = 12 * (parseInt(date.slice(0,4)) - 2019) + parseInt(date.slice(5,7)) - 7
   const leverage = data[3]
   const user = "user123"
-  
   let db = new sqlite3.Database('asset-values', (err) => {
-    
+    if (err) {
+      console.error(err.message);
+      response.json({"message":"error"})
+      return
+    }
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
+      if (err) {
+        console.error(err.message);
+        response.json({"message":"error"})
+        return
+      }
       db.all(`SELECT Date, ${name} FROM ${cat} ORDER BY Date`, (err, rows) => {
+        if (err) {
+          console.error(err.message);
+          response.json({"message":"error"})
+          return
+        }
         
         if (leverage > 1) {
           let returns = []
           for(let i = 1; i < rows.length; i++) {
             returns.push((rows[i][name] / rows[i-1][name]) - 1)
           }
-          for (let i = 0; i < returns.length; i++) {
-            // if it goes negative I should set it to zero
+          // Starting at the purchase time, fill in the leveraged values in both directions.
+          // Can't do from beginning because it could go to zero before the purchase time.
+          for (let i = date; i < returns.length; i++) {
             let newval = (leverage * returns[i] + 1) * rows[i][name]
             if (newval < 0) {
               newval = 0
             }
             rows[i+1][name] = newval
           }
+          for (let i = date; i > 0; i--) {
+            let newval = rows[i][name] / (leverage * returns[i - 1] + 1) 
+            if (newval < 0) {
+              newval = 0
+            }
+            rows[i-1][name] = newval
+          }
         }
 
         const quantity = (principal / rows[date][name])
         rows.forEach(row => {
           db.run(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`,(quantity * row[name]), (row.Date), err => {if (err) {
-            console.error(err.message);
+            console.error("Here!", err.message);
         }})
         })
+
+        response.json({"message":"success"})
+        return
       })
     })
   })
-  response.json({"message":"success"})
 })
 
 

@@ -32,12 +32,11 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
         }
         }
     
-        return ((math.matrix(L)));
+        return (math.matrix(L));
     }
 
     // Cholesky decomposition to generate correlated random numbers
     const L = choleskyDecomposition(corr);  // Cholesky decomposition
-    console.log(L)
     // Generate random numbers
 
 
@@ -56,7 +55,8 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
         for (let t = 1; t< num_time_steps; t++) {
             if (events[String(t)]){
                 for (const [k, v] of Object.entries(events[String(t)])) {
-                    rand[parseInt(k)][t+3] = v / L._data[parseInt(k)][parseInt(k)]
+                    console.log(k, v)
+                    rand[parseInt(k)][t+3] = (v - mu[k]) / sigma[k]
                 }
             }
         }
@@ -74,14 +74,17 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
                 dW.push(matrixmul)
                 
             })
-
+            
+            if (t>=20 & t<=22) {
+                console.log(dW)
+            }
             
 
             // Compute stock prices using GBM formula
             for (let s = 0; s < num_stocks; s++) {
                 
                 let drift = mu[s + numevents] * prices[s][t - 1][n]            
-                let diffusion = sigma[s + numevents] * prices[s][t - 1][n] * dW[s + numevents] * 15
+                let diffusion = sigma[s + numevents] * prices[s][t - 1][n] * dW[s]
                 
                 newprice = prices[s][t - 1][n] + drift * dt + diffusion
                 if (newprice > 0) {
@@ -94,7 +97,6 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
 
         }
     }
-
     return prices
 }
 

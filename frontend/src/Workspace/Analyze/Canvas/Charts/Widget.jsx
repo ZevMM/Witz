@@ -6,6 +6,7 @@ const Widget1 = ({portfolio}) => {
     const [data, setData] = useState("loading...")
     
     useEffect(() => {
+        console.log("re-requesting total value")
         axios
         .post('http://localhost:3001/totalvalue', portfolio)
         .then(response => {
