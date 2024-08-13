@@ -329,56 +329,55 @@ app.get('/sharpe/:start', (request, response) => {
 
 app.get('/ulcer/:start', (request, response) => {
   try {
-  let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
-      let vals = rows.map(row => Object.values(row).slice(1).reduce((p,c) => p+c, 0))
-      axios.post('https://api.portfoliooptimizer.io/v1/portfolio/analysis/ulcer-index', {"portfolios" : [{"portfolioValues":vals}]})
-      .then((r) => {
-        response.json(r.data['portfolios'][0]['portfolioUlcerIndex'].toFixed(6))})
-    })
-  })
-  } catch (error) {
-    response.json({"error": error})
-  }
-})
-
-app.post('/valuepiechart', (request, response) => {
-  try {
-  const portfolio = request.body
-
-
-  let stocks = portfolio[0]["data"].slice(1)
-  let all = []
-  let cats = []
-  const colors = ["#ed6268", "#7aa5e2", "#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
-
-  let db = new sqlite3.Database('asset-values', (err) => {
-    if (err) {
-      console.error("error", err.message);
-    }
-    //make sure this is newest, not oldest
-
-    db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {  
-      portfolio.forEach((c, q) => {
-        if (c.data.length > 1) {
-          let prices = c.data.slice(1).map(d => {return {name: d[0], val: row[d[0]]}})
-          prices.sort((a, b) => a.val - b.val)
-          prices = prices.map((p, i) => {
-            const ext = Math.floor(45 * (i + 1) / prices.length + 44)
-            return({"name" : p.name, "value" : parseFloat(p.val.toFixed(2)), "fill": ext > 9 ? `${colors[q]}${ext}` : `${colors[q]}0${ext}`})
-          })
-          all.push(...prices)
-          cats.push({"name" : c.title, "value": parseFloat(prices.reduce((sum, cur) => sum + cur.value, 0).toFixed(2)), "fill": `${colors[q]}`})
-        }
+    let db = new sqlite3.Database('asset-values', (err) => {
+      db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+        let vals = rows.map(row => Object.values(row).slice(1).reduce((p,c) => p+c, 0))
+        axios.post('https://api.portfoliooptimizer.io/v1/portfolio/analysis/ulcer-index', {"portfolios" : [{"portfolioValues":vals}]})
+        .then((r) => {
+          response.json(r.data['portfolios'][0]['portfolioUlcerIndex'].toFixed(6))})
       })
-      let toReturn = {
-        "data1" : all,
-        "data2" : cats
-      }
-      response.json(toReturn)
-    });
+    })
+    } catch (error) {
+      response.json({"error": error})
+    }
   })
-  } catch (error) {
+
+  app.post('/valuepiechart', (request, response) => {
+    try {
+    const portfolio = request.body
+
+
+    let stocks = portfolio[0]["data"].slice(1)
+    let all = []
+    let cats = []
+    const colors = ["#ed6268", "#7aa5e2", "#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
+
+    let db = new sqlite3.Database('asset-values', (err) => {
+      if (err) {
+        console.error("error", err.message);
+      }
+      //make sure this is newest, not oldest
+
+      db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {  
+        portfolio.forEach((c, q) => {
+          if (c.data.length > 1) {
+            let prices = c.data.slice(1).map(d => {return {name: d[0], val: row[d[0]]}})
+            prices.sort((a, b) => a.val - b.val)
+            prices = prices.map((p, i) => {
+              const ext = Math.floor(45 * (i + 1) / prices.length + 44)
+              return({"name" : p.name, "value" : parseFloat(p.val.toFixed(2)), "fill": ext > 9 ? `${colors[q]}${ext}` : `${colors[q]}0${ext}`})
+            })
+            all.push(...prices)
+            cats.push({"name" : c.title, "value": parseFloat(prices.reduce((sum, cur) => sum + cur.value, 0).toFixed(2)), "fill": `${colors[q]}`})
+          }
+        })
+        let toReturn = {
+          "data1" : all,
+          "data2" : cats
+        }
+        response.json(toReturn)
+      });
+    })} catch (error) {
     response.json({"error": error})
   }
 })
@@ -891,6 +890,7 @@ app.post('/portfolioAdd', (request, response) => {
       response.json({"message":"error"})
       return
     }
+    db.configure('busyTimeout', 5000);
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
       if (err) {
         console.error(err.message);
