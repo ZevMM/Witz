@@ -75,9 +75,6 @@ function main(mu, sigma, num_simulations, num_stocks, num_time_steps, starts, co
                 
             })
             
-            if (t>=20 & t<=22) {
-                console.log(dW)
-            }
             
 
             // Compute stock prices using GBM formula
