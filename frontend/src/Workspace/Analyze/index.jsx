@@ -12,7 +12,7 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
     useEffect(() => {
         if (!isUpdated) {
             axios
-            .post('http://localhost:3001/data', portfolio)
+            .post('https://witz-zjkz.onrender.com/data', portfolio)
             .then(response => {
                 setReport(response.data)
             })

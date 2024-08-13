@@ -46,7 +46,7 @@ const CorrTable = () => {
     const [assets, setAssets] = useState([])
 
     useEffect(() => {
-        axios.get('http://localhost:3001/myportfolio')
+        axios.get('https://witz-zjkz.onrender.com/myportfolio')
         .then(response =>
           setAssets(response.data)
         )
@@ -55,7 +55,7 @@ const CorrTable = () => {
     useEffect(()=> {
         
         axios
-        .get('http://localhost:3001/corrmatrix')
+        .get('https://witz-zjkz.onrender.com/corrmatrix')
         .then((response) => {
             
             setData({corr: response.data.corr,

@@ -27,7 +27,7 @@ const submitForm = (e, cat, portfolio, setPortfolio, setFilter, levs, setLevs) =
 
   setPortfolio(copy)
 
-  axios.post('http://localhost:3001/portfolioAdd', {cat: cat, data: formData})
+  axios.post('https://witz-zjkz.onrender.com/portfolioAdd', {cat: cat, data: formData})
 
   e.target.reset()
   setFilter("")
@@ -180,7 +180,7 @@ function SideBar({type, portfolio, setPortfolio,levs, setLevs}) {
 
   useEffect(() => {
     axios
-    .get(`http://localhost:3001/${cat}`)
+    .get(`https://witz-zjkz.onrender.com/${cat}`)
     .then(response => {
         setAll(response.data)
     })

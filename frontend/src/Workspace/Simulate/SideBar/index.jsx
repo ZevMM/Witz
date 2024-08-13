@@ -60,7 +60,7 @@ const runSim = (e, setSimData, all, events, setView, levs) => {
   console.log("formatted", formatted)
 
   axios
-  .post('http://localhost:3001/simulate', {levs: levs, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps, rebalance: rebalance})
+  .post('https://witz-zjkz.onrender.com/simulate', {levs: levs, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps, rebalance: rebalance})
   .then(response => {
     console.log(response)
     setSimData(response.data)

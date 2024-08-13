@@ -9,7 +9,7 @@ const Risks = ({}) => {
     const [data, setData] = useState(null)
 
     useEffect(() => {
-        axios.get('http://localhost:3001/risks')
+        axios.get('https://witz-zjkz.onrender.com/risks')
         .then((response) => {
             console.log(response.data)
             setData(response.data)

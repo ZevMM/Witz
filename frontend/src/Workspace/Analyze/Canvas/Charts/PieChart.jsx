@@ -9,7 +9,7 @@ const RenderPieChart = ({portfolio}) => {
   
   useEffect(() => {
     axios
-    .post('http://localhost:3001/valuepiechart', portfolio)
+    .post('https://witz-zjkz.onrender.com/valuepiechart', portfolio)
     .then(response => {
         console.log(response.data)
         setData(response.data)

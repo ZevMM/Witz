@@ -86,7 +86,7 @@ const StatTable = ({portfolio}) => {
     const [filter, setFilter] = useState("Select")
 
     useEffect(() => {
-        axios.get('http://localhost:3001/myportfolio')
+        axios.get('https://witz-zjkz.onrender.com/myportfolio')
         .then(response => {
           setAssets(response.data)
           setActiveAssets(response.data)
@@ -95,7 +95,7 @@ const StatTable = ({portfolio}) => {
 
     useEffect(()=> {
         axios
-        .post('http://localhost:3001/tstable', portfolio)
+        .post('https://witz-zjkz.onrender.com/tstable', portfolio)
         .then((response) => {
             setData(response.data)
         })

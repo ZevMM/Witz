@@ -71,7 +71,7 @@ const RenderLineChart = ({portfolio}) => {
   const [filter, setFilter] = useState('Select')
   
   useEffect(() => {
-    axios.get('http://localhost:3001/myportfolio')
+    axios.get('https://witz-zjkz.onrender.com/myportfolio')
     .then(response => {
       setAllNames(response.data)
       setActive(response.data.slice(0,5))
@@ -80,7 +80,7 @@ const RenderLineChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .post('http://localhost:3001/linegraph', portfolio)
+    .post('https://witz-zjkz.onrender.com/linegraph', portfolio)
     .then((response) => {
       setData(response.data)
       setShowing(response.data)
@@ -128,7 +128,7 @@ const RenderReturnChart = ({portfolio}) => {
   const [filter, setFilter] = useState('Select')
   
   useEffect(() => {
-    axios.get('http://localhost:3001/myportfolio')
+    axios.get('https://witz-zjkz.onrender.com/myportfolio')
     .then(response => {
       setAllNames(response.data)
       setActive(response.data.slice(0,7))
@@ -137,7 +137,7 @@ const RenderReturnChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .get(`http://localhost:3001/returngraph/${start}`)
+    .get(`https://witz-zjkz.onrender.com/returngraph/${start}`)
     .then((response) => {
       setData(response.data)
     })

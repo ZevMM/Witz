@@ -68,7 +68,7 @@ const RenderAreaChart = ({portfolio}) => {
   const [filter, setFilter] = useState('Select')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/myportfolio')
+    axios.get('https://witz-zjkz.onrender.com/myportfolio')
     .then(response => {
       setAllNames(response.data)
       setActive(response.data.slice(0,5))
@@ -77,7 +77,7 @@ const RenderAreaChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .post('http://localhost:3001/areachart', portfolio)
+    .post('https://witz-zjkz.onrender.com/areachart', portfolio)
     .then(response => {
         setData(response.data)
         setShowing(response.data)

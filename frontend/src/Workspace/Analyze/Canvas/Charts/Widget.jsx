@@ -8,7 +8,7 @@ const Widget1 = ({portfolio}) => {
     useEffect(() => {
         console.log("re-requesting total value")
         axios
-        .post('http://localhost:3001/totalvalue', portfolio)
+        .post('https://witz-zjkz.onrender.com/totalvalue', portfolio)
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -34,7 +34,7 @@ const Widget2 = ({portfolio}) => {
     useEffect(() => {
         console.log("re-requesting volatility", start)
         axios
-        .get(`http://localhost:3001/volatility/${start}`)
+        .get(`https://witz-zjkz.onrender.com/volatility/${start}`)
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -66,7 +66,7 @@ const Widget3 = ({portfolio}) => {
 
     useEffect(() => {
         axios
-        .get(`http://localhost:3001/diversificationratio/${start}`)
+        .get(`https://witz-zjkz.onrender.com/diversificationratio/${start}`)
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -98,7 +98,7 @@ const Widget4 = ({portfolio}) => {
 
     useEffect(() => {
         axios
-        .get(`http://localhost:3001/sharpe/${start}`)
+        .get(`https://witz-zjkz.onrender.com/sharpe/${start}`)
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -131,7 +131,7 @@ const Widget5 = ({portfolio}) => {
 
     useEffect(() => {
         axios
-        .get(`http://localhost:3001/ulcer/${start}`)
+        .get(`https://witz-zjkz.onrender.com/ulcer/${start}`)
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -163,7 +163,7 @@ const Widget6 = ({portfolio}) => {
 
     useEffect(() => {
         axios
-        .get(`http://localhost:3001/return/${start}`)
+        .get(`https://witz-zjkz.onrender.com/return/${start}`)
         .then(response => {
             console.log(response.data)
             setData(response.data)

@@ -8,7 +8,7 @@ const RenderRiskChart = ({portfolio}) => {
   
   useEffect(() => {
     axios
-    .get('http://localhost:3001/riskpiechart')
+    .get('https://witz-zjkz.onrender.com/riskpiechart')
     .then(response => {
         console.log(response.data)
         setData(response.data)

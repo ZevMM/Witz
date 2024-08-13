@@ -69,7 +69,7 @@ const RenderSectorChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .post('http://localhost:3001/sectorchart', portfolio)
+    .post('https://witz-zjkz.onrender.com/sectorchart', portfolio)
     .then(response => {
         setData(response.data)
         setShowing(response.data)
