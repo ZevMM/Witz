@@ -278,7 +278,6 @@ app.post('/sectorchart', (request, response) => {
   portfolio = request.body
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
-      let df = pl.DataFrame(rows)
       let toReturn = []
 
       console.timeEnd("checkpoint 1")
@@ -296,7 +295,7 @@ app.post('/sectorchart', (request, response) => {
             let tot = 0
             data.forEach((asset) => {
               
-              tot += df[asset[0]][i]
+              tot += rows[i][asset[0]]
             })
             entry[cat.title] = parseFloat(tot.toFixed(2))
             
