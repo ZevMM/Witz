@@ -43,7 +43,7 @@ const runSim = (e, setSimData, all, events, setView, levs) => {
     }
     
     
-    if (!names[s]) {
+    if (!(s in names)) {
       names[s] = count
       count++
     }
@@ -57,7 +57,8 @@ const runSim = (e, setSimData, all, events, setView, levs) => {
   for (const [key, value] of Object.entries(names)) {
     ordered[value] = key
   }
-  console.log(formatted)
+  console.log("formatted", formatted)
+
   axios
   .post('http://localhost:3001/simulate', {levs: levs, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps, rebalance: rebalance})
   .then(response => {
@@ -110,7 +111,7 @@ function SideBar({type, portfolio, simprops, levs}) {
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
           <form style={{width: "75%"}} onSubmit={(e) => handleSubmit(e, id, setID, mevents, mall, setMevents, setMall, mlayout, setMlayout, range)}>
             <div className="label">Index</div>
-            <select className="simselect" name="idx">
+            <select className="simselect" name="idx" required>
               {indices.map(i => (<option value={i}>{i}</option>))}
             </select>
             <div className="label">Percent Change</div>
@@ -130,23 +131,23 @@ function SideBar({type, portfolio, simprops, levs}) {
           <div className="label">Type</div>
 
           <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-            <input type="radio" id="stack" name="type" value="stack" onClick={() => setIsmc(false)}/>
+            <input type="radio" id="stack" name="type" value="stack" onClick={() => setIsmc(false)} required/>
             <label for="stack" style={{marginLeft:"5px"}}>Stacked</label>
             
           </div>
 
           <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-            <input type="radio" id="sep" name="type" value="sep" onClick={() => setIsmc(false)}/>
+            <input type="radio" id="sep" name="type" value="sep" onClick={() => setIsmc(false)} required/>
             <label for="sep" style={{marginLeft:"5px"}}>Separate</label>
             
           </div>
 
           <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-            <input type="radio" id="montecarlo" name="type" value="montecarlo" onClick={() => setIsmc(true)}/>
+            <input type="radio" id="montecarlo" name="type" value="montecarlo" onClick={() => setIsmc(true)} required/>
             <label for="montecarlo" style={{marginLeft:"5px"}}>Monte Carlo</label>
             
           </div>
-          {ismc? (<><div className="label">Simulations</div><input name="numsims" className={"siminput"} type="number"/></>)
+          {ismc? (<><div className="label">Simulations</div><input name="numsims" className={"siminput"} type="number" required/></>)
            : null}
 
 

@@ -10,10 +10,19 @@ const submitForm = (e, cat, portfolio, setPortfolio, setFilter, levs, setLevs) =
   formData = Array.from(formData)  
   formData = formData.map(([k, v]) => v)
 
-  setLevs([...levs, formData[3]])
+  
   
   const index = getTaskPos(cat, portfolio)
   const copy = [...portfolio]
+
+  if (portfolio[index]["data"].filter(l => l[0] == formData[0]).length > 0) {
+    alert("Can't add duplicate ticker (sorry, I'm working on it!)")
+    e.target.reset()
+    setFilter("")
+    return
+  }
+
+  setLevs([...levs, formData[3]])
   portfolio[index].data.push(formData)
 
   setPortfolio(copy)

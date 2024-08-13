@@ -607,7 +607,7 @@ app.post('/simulate', (request, response) => {
 
             let simData = sim.GBM(drifts, vols, numsims, allassets.length, numsteps, starts, covMatrix, names.length, events, lagMatrix)
             
-            /*if (levs.some(ele => ele != 1)) {simData = rebalance.lever(simData, initvalues, numsims, numsteps, levs)}*/
+            if (levs.some(ele => ele != 1)) {simData = rebalance.lever(simData, initvalues, numsims, numsteps, levs)}
             if (reb) {simData = rebalance.rebalance(simData, numsims, initvalues, numsteps)}
             else {simData = rebalance.weight(simData, initvalues)}
             

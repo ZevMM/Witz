@@ -20,8 +20,9 @@ function main(prices, numsims, initvals, timesteps) {
 }
 
 function lever(prices, initvals, numsims, timesteps, levs) {
+    console.log("levs", levs)
     let returns = Array(prices.length).fill(0).map(p => Array(timesteps - 1).fill(0).map(t => Array(numsims).fill(0)))
-    for (let n = 0; n< numsims; n++) {
+    for (let n = 0; n < numsims; n++) {
         for (let i = 1; i < timesteps; i++) {
             prices.forEach((s, x) => {
                 returns[x][i - 1][n] = s[i][n] / s[i-1][n] - 1
@@ -31,7 +32,7 @@ function lever(prices, initvals, numsims, timesteps, levs) {
     for (let n = 0; n< numsims; n++) {
         for (let i = 1; i < timesteps; i++) {
             returns.forEach((s, x) => {
-                let newprice = prices[x][i - 1][n] * returns[x][i - 1][n] * levs[x]
+                let newprice = prices[x][i - 1][n] * (1 + returns[x][i - 1][n]) * levs[x]
                 if (newprice < 0) {
                     newprice = 0
                 }
