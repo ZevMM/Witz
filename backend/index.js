@@ -17,7 +17,7 @@ app.options('*', cors())
 
 
 app.post('/totalvalue', (request, response) => {
-  console.log("total value requested")
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
@@ -33,11 +33,14 @@ app.post('/totalvalue', (request, response) => {
       response.json(Object.values(row).slice(1).reduce((sum, cur) => sum += cur).toFixed(2))
     });
   })
-
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.get('/volatility/:start', (request, response) => {
+  try{
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
       let returns = []
@@ -51,6 +54,9 @@ app.get('/volatility/:start', (request, response) => {
       response.json(volatility.toFixed(6))
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 /*
 app.post('/volatility', (request, response) => {
@@ -94,6 +100,7 @@ app.post('/volatility', (request, response) => {
 */
 
 app.get('/diversificationratio/:start', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
@@ -130,10 +137,14 @@ app.get('/diversificationratio/:start', (request, response) => {
 
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.get('/corrmatrix', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
@@ -199,6 +210,9 @@ app.get('/corrmatrix', (request, response) => {
 
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
@@ -215,6 +229,7 @@ function convertDateFormat(dateString) {
 }
 
 app.get('/return/:start', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 WHERE Date = '2024-06-01' OR Date = '${request.params.start}' ORDER BY Date; `, (err,rows) => {
       let a = Object.values(rows[0]).slice(1).reduce((acc, cur) => acc + cur)
@@ -222,9 +237,14 @@ app.get('/return/:start', (request, response) => {
       response.json(((b-a)/a).toFixed(2))
     })
   })
+  }
+  catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.post('/areachart', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
       let df = pl.DataFrame(rows)
@@ -242,10 +262,14 @@ app.post('/areachart', (request, response) => {
       response.json(toReturn)
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.post('/sectorchart', (request, response) => {
+  try {
   portfolio = request.body
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
@@ -277,10 +301,14 @@ app.post('/sectorchart', (request, response) => {
       response.json(toReturn)
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/sharpe/:start', (request, response) => {
   //once I add bonds, use the 10-year yield for risk free rate
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
       let returns = []
@@ -294,10 +322,13 @@ app.get('/sharpe/:start', (request, response) => {
       response.json(((avg_return - 0.04) / volatility).toFixed(6))
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/ulcer/:start', (request, response) => {
-  //once I add bonds, use the 10-year yield for risk free rate
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
       let vals = rows.map(row => Object.values(row).slice(1).reduce((p,c) => p+c, 0))
@@ -306,9 +337,13 @@ app.get('/ulcer/:start', (request, response) => {
         response.json(r.data['portfolios'][0]['portfolioUlcerIndex'].toFixed(6))})
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.post('/valuepiechart', (request, response) => {
+  try {
   const portfolio = request.body
 
 
@@ -343,10 +378,14 @@ app.post('/valuepiechart', (request, response) => {
       response.json(toReturn)
     });
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.get('/riskpiechart', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
@@ -395,10 +434,14 @@ app.get('/riskpiechart', (request, response) => {
 
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.post('/tstable', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
       let df = pl.DataFrame(rows)
@@ -407,10 +450,13 @@ app.post('/tstable', (request, response) => {
       response.json(toReturn)
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/returngraph/:start', (request, response) => {
-  //do I want to scale relative to average or do pct change?
+  try {
   //I should make the keys the asset names
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, function(err, rows) {
@@ -426,9 +472,14 @@ app.get('/returngraph/:start', (request, response) => {
         toReturn.push(entry)
       })
       response.json(toReturn)
-})})})
+})})
+} catch (error) {
+  response.json({"error": error})
+}
+})
 
 app.get('/risks', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rowZ) => {
       let totalvalue = rowZ.map(row => {
@@ -479,11 +530,14 @@ app.get('/risks', (request, response) => {
       })
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.post('/linegraph', (request, response) => {
-  //do I want to scale relative to average or do pct change?
-  //I should make the keys the asset names
+  
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
       let df = pl.DataFrame(rows)
@@ -503,11 +557,14 @@ app.post('/linegraph', (request, response) => {
       response.json(toReturn)
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.post('/simulate', (request, response) => {
-
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
@@ -648,84 +705,119 @@ app.post('/simulate', (request, response) => {
       })
     })
   })
-
+  } catch (error) {
+    response.json({"error": error})
+  }
 
 })
 
 app.get('/myportfolio', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+} catch (error) {
+  response.json({"error": error})
+}
 })
 
 app.get('/monthlyStock', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('monthlyStock');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+} catch (error) {
+  response.json({"error": error})
+}
 })
 
 app.get('/realEstate', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('realEstate');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/mutualFunds', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('mutualFunds');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/ETFs', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('ETFs');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/crypto', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('crypto');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/commodities', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('commodities');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 //pretty sure I could have made all of these into one function.
 app.get('/currency', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('currency');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
 app.post('/adduser', (request, response) => {
+  try{
   console.log("new user")
   const user = request.body.name
   let db = new sqlite3.Database('asset-values', (err) => {
@@ -754,26 +846,37 @@ app.post('/adduser', (request, response) => {
       })
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.post('/deleteuser', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.run(`DROP TABLE IF EXISTS ${request.body.name}`, (err) => {if (err) {
       console.error(err.message);
   }})
   })
   response.json({"message":"success"})
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 app.get('/test', (request, response) => {
+  try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM "user123"`, (err, rows) => console.log(err, rows))
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 app.get('/test2', (request, response) => {response.json({"message":"success"})})
 
 app.post('/portfolioAdd', (request, response) => {
-  
+  try {
   const cat = request.body.cat
   const data = request.body.data
   const name = data[0]
@@ -836,6 +939,9 @@ app.post('/portfolioAdd', (request, response) => {
       })
     })
   })
+  } catch (error) {
+    response.json({"error": error})
+  }
 })
 
 
