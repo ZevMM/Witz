@@ -890,7 +890,7 @@ app.post('/portfolioAdd', (request, response) => {
       response.json({"message":"error"})
       return
     }
-    db.configure('busyTimeout', 5000);
+    db.configure('busyTimeout', 6000);
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
       if (err) {
         console.error(err.message);
