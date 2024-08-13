@@ -281,9 +281,9 @@ app.post('/sectorchart', (request, response) => {
       let toReturn = []
 
       console.timeEnd("checkpoint 1")
-      df.rows().forEach((row,i) => {
+      rows.forEach((row,i) => {
         console.time(`timestep ${i}`)
-        let shortdate = convertDateFormat(row[0])
+        let shortdate = convertDateFormat(row["Date"])
 
         let entry = {
           "date": shortdate,
