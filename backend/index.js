@@ -273,6 +273,7 @@ app.post('/areachart', (request, response) => {
 
 app.post('/sectorchart', (request, response) => {
   console.time("sector")
+  console.time("checkpoint 1")
   try {
   portfolio = request.body
   let db = new sqlite3.Database('asset-values', (err) => {
@@ -280,7 +281,7 @@ app.post('/sectorchart', (request, response) => {
       let df = pl.DataFrame(rows)
       let toReturn = []
 
-
+      console.timeEnd("checkpoint 1")
       df.rows().forEach((row,i) => {
         let shortdate = convertDateFormat(row[0])
 
