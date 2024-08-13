@@ -770,6 +770,7 @@ app.get('/test', (request, response) => {
     db.all(`SELECT * FROM "user123"`, (err, rows) => console.log(err, rows))
   })
 })
+app.get('/test2', (request, response) => {response.json({"message":"success"})})
 
 app.post('/portfolioAdd', (request, response) => {
   
