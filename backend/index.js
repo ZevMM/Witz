@@ -243,7 +243,9 @@ app.get('/return/:start', (request, response) => {
   }
 })
 
+
 app.post('/areachart', (request, response) => {
+  console.time("area")
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
@@ -260,6 +262,7 @@ app.post('/areachart', (request, response) => {
         toReturn.push(entry)
       })
       response.json(toReturn)
+      console.timeEnd("area")
     })
   })
   } catch (error) {
@@ -269,6 +272,7 @@ app.post('/areachart', (request, response) => {
 
 
 app.post('/sectorchart', (request, response) => {
+  console.time("sector")
   try {
   portfolio = request.body
   let db = new sqlite3.Database('asset-values', (err) => {
@@ -299,6 +303,7 @@ app.post('/sectorchart', (request, response) => {
         toReturn.push(entry)
       })
       response.json(toReturn)
+      console.timeEnd("sector")
     })
   })
   } catch (error) {
@@ -455,6 +460,7 @@ app.post('/tstable', (request, response) => {
 })
 
 app.get('/returngraph/:start', (request, response) => {
+  console.time("returngraph")
   try {
   //I should make the keys the asset names
   let db = new sqlite3.Database('asset-values', (err) => {
@@ -471,6 +477,8 @@ app.get('/returngraph/:start', (request, response) => {
         toReturn.push(entry)
       })
       response.json(toReturn)
+
+      console.timeEnd("returngraph")
 })})
 } catch (error) {
   response.json({"error": error})
