@@ -93,7 +93,7 @@ const handleSubmit = (e, id, setID, mevents, mall, setMevents, setMall, mlayout,
 }
 
 //should query the database to figure out all the names but not gonna add much more so this is fine for now
-const indices = ["PNRGINDEXM",	"USEPUINDXD",	"GEPUCURRENT",	"CPIAUCSL",	"CORESTICKM159SFRBATL",	"AMBOR30",	"AMERIBOR",	"MORTGAGE30US",	"FEDFUNDS",	"SP500",	"DJIA",	"APU0000704111",	"DEXUSEU",	"BOGMBASE",	"COMPOUT",	"IHLIDXUSTPSOFTDEVE",	"BBKMGDP",	"WEI",	"ACTLISCOUUS"]
+const indices = ["DATE","Global_Energy_Prices","US_Econ_Policy_Uncertainty","World_Econ_Policy_Uncertainty","CPI_US","AMERIBOR","Overnight_AMERIBOR","US_30y_Mortgage","Fed_Funds","SP500","DJIA","Bacon","DEXUSEU","Monetary_Base","Commericial_Paper_Outstanding","WEI","US_Housing_Inventory","Crude_Oil","USDX","JPY","Nikkei225","Russell2000","CBOE_Volatility"]
 
 
 function SideBar({type, portfolio, simprops, levs}) {
@@ -112,7 +112,7 @@ function SideBar({type, portfolio, simprops, levs}) {
           <form style={{width: "75%"}} onSubmit={(e) => handleSubmit(e, id, setID, mevents, mall, setMevents, setMall, mlayout, setMlayout, range)}>
             <div className="label">Index</div>
             <select className="simselect" name="idx" required>
-              {indices.map(i => (<option value={i}>{i}</option>))}
+              {indices.map(i => (<option value={i}>{i.replaceAll("_", " ")}</option>))}
             </select>
             <div className="label">Percent Change</div>
             <input type="number" name="pct" className="siminput" required/>
