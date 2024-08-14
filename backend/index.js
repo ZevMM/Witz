@@ -843,7 +843,8 @@ app.post('/adduser', (request, response) => {
           response.json({"message":"error"})
           return
         }
-        db.each(`SELECT Date FROM monthlyStock`, (err, row) => {
+        db.run(`CREATE INDEX date_index ON ${user} (Date)`, (err) => {
+          db.each(`SELECT Date FROM monthlyStock`, (err, row) => {
             db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {
               if (err) {
                 console.error(err.message);
@@ -853,6 +854,9 @@ app.post('/adduser', (request, response) => {
         }, () => {
           response.json({"message":"success"})
         })
+        }
+      )
+
       })
     })
   })
