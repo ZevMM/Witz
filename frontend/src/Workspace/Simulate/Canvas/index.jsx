@@ -184,7 +184,7 @@ const EventBar=({simprops}) => {
             const id = cb.i
             return(<div className={
               (id.includes("invis")? "invis": id.includes("green") ? "macro_up" : "macro_down")}
-              key={id}>{id.includes("invis") ? null : mevents[id].subj}</div>)
+              key={id}>{id.includes("invis") ? null : mevents[id].subj.replaceAll("_", " ")}</div>)
         })}
     </ReactGridLayout>
   </div>)
