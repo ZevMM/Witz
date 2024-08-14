@@ -904,7 +904,7 @@ app.post('/portfolioAdd', (request, response) => {
       response.json({"message":"error"})
       return
     }
-    
+    db.configure('busyTimeout', 6000);
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
       if (err) {
         console.error(err.message);
@@ -944,10 +944,7 @@ app.post('/portfolioAdd', (request, response) => {
         const quantity = (principal / rows[date][name])
 
         db.serialize(() => {
-          db.run("PRAGMA journal_mode = WAL");
-          db.configure('busyTimeout', 6000);
-          db.run("BEGIN TRANSACTION");
-
+          
           let stmt = db.prepare(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`);
           rows.forEach((row, i) => {
             stmt.run(quantity * row[name], row.Date);
@@ -960,7 +957,11 @@ app.post('/portfolioAdd', (request, response) => {
           })
 
           stmt.finalize();
-          db.run("COMMIT");
+
+          db.each(`SELECT * FROM ${user}`, (err, row) => {
+            console.log(row)
+          }
+        )
         })
         db.close()
         response.json({"message":"success"})
