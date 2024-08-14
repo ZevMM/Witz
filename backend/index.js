@@ -944,7 +944,7 @@ app.post('/portfolioAdd', (request, response) => {
         const quantity = (principal / rows[date][name])
 
         db.serialize(() => {
-          
+
           let stmt = db.prepare(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`);
           rows.forEach((row, i) => {
             stmt.run(quantity * row[name], row.Date);
@@ -958,7 +958,7 @@ app.post('/portfolioAdd', (request, response) => {
 
           stmt.finalize();
 
-          db.each(`SELECT * FROM ${user}`, (err, row) => {
+          db.get(`SELECT * FROM ${user}`, (err, row) => {
             console.log(row)
           }
         )
