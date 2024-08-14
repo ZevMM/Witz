@@ -11,8 +11,22 @@ const rebalance = require('./rebalancing.js')
 
 app.use(express.json())
 app.use(cors())
-app.options('*', cors())
 
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.sendStatus(200); // Respond with status 200 (OK)
+});
+
+let db = new sqlite3.Database('asset-values', (err) => {
+  if (err) {
+    console.error(err.message);
+    response.json({"message":"error"})
+    return
+  }
+db.configure('busyTimeout', 6000);
+})
 
 
 
@@ -830,34 +844,26 @@ app.post('/adduser', (request, response) => {
   try{
   console.log("new user")
   const user = request.body.name
-  let db = new sqlite3.Database('asset-values', (err) => {
-    if (err) {
-        console.error(err.message);
+  db.run(`DROP TABLE IF EXISTS ${user}`, err => {
+    db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
+      if (err) {
+        console.log(err.message)
         response.json({"message":"error"})
         return
-    }
-    db.run(`DROP TABLE IF EXISTS ${user}`, err => {
-      db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
-        if (err) {
-          console.log(err.message)
-          response.json({"message":"error"})
-          return
-        }
-        db.run(`CREATE INDEX date_index ON ${user} (Date)`, (err) => {
-          db.each(`SELECT Date FROM monthlyStock`, (err, row) => {
-            db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {
-              if (err) {
-                console.error(err.message);
-                response.json({"message":"error"})
-                return
-            }})
-        }, () => {
-          response.json({"message":"success"})
-        })
-        }
-      )
-
+      }
+      db.run(`CREATE INDEX date_index ON ${user} (Date)`, (err) => {
+        db.each(`SELECT Date FROM monthlyStock`, (err, row) => {
+          db.run(`INSERT INTO ${user}(Date) VALUES(?)`, row.Date, (err) => {
+            if (err) {
+              console.error(err.message);
+              response.json({"message":"error"})
+              return
+          }})
+      }, () => {
+        response.json({"message":"success"})
       })
+      }
+    )
     })
   })
   } catch (error) {
@@ -867,11 +873,10 @@ app.post('/adduser', (request, response) => {
 
 app.post('/deleteuser', (request, response) => {
   try {
-  let db = new sqlite3.Database('asset-values', (err) => {
     db.run(`DROP TABLE IF EXISTS ${request.body.name}`, (err) => {if (err) {
       console.error(err.message);
   }})
-  })
+
   response.json({"message":"success"})
   } catch (error) {
     response.json({"error": error})
@@ -889,6 +894,8 @@ app.get('/test', (request, response) => {
 })
 app.get('/test2', (request, response) => {response.json({"message":"success"})})
 
+
+
 app.post('/portfolioAdd', (request, response) => {
   try {
   
@@ -902,13 +909,7 @@ app.post('/portfolioAdd', (request, response) => {
   date = 12 * (parseInt(date.slice(0,4)) - 2019) + parseInt(date.slice(5,7)) - 7
   const leverage = data[3]
   const user = "user123"
-  let db = new sqlite3.Database('asset-values', (err) => {
-    if (err) {
-      console.error(err.message);
-      response.json({"message":"error"})
-      return
-    }
-    db.configure('busyTimeout', 6000);
+
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
       if (err) {
         console.error(err.message);
@@ -945,7 +946,7 @@ app.post('/portfolioAdd', (request, response) => {
           }
         }
 
-        const quantity = (principal / rows[date][name])
+          const quantity = (principal / rows[date][name])
 
           let stmt = db.prepare(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`);
           rows.forEach((row, i) => {
@@ -959,11 +960,13 @@ app.post('/portfolioAdd', (request, response) => {
           })
 
           stmt.finalize();
+
+        db.close()
+
         response.json({"message":"success"})
         return
       })
     })
-  })
   } catch (error) {
     response.json({"error": error})
   }
