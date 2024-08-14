@@ -942,12 +942,13 @@ app.post('/portfolioAdd', (request, response) => {
         }
 
         const quantity = (principal / rows[date][name])
-        rows.forEach((row, i) => {
-          
-          db.run(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`,(quantity * row[name]), (row.Date), err => {
-            if (err) {
-              console.error("Here!", err.message);
-            }
+
+        db.serialize(() => {
+          db.run("BEGIN TRANSACTION");
+
+          let stmt = db.prepare(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`);
+          rows.forEach((row, i) => {
+            stmt.run(quantity * row[name], row.Date);
             if (i == 0) {
               console.timeEnd(`portfolioAdd (first) for ${name}`)
             }
@@ -955,8 +956,11 @@ app.post('/portfolioAdd', (request, response) => {
               console.timeEnd(`portfolioAdd (final) for ${name}`)
             }
           })
-        })
 
+          stmt.finalize();
+          db.run("COMMIT");
+        })
+        db.close()
         response.json({"message":"success"})
         return
       })
