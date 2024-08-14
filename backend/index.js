@@ -943,8 +943,6 @@ app.post('/portfolioAdd', (request, response) => {
 
         const quantity = (principal / rows[date][name])
 
-        db.serialize(() => {
-
           let stmt = db.prepare(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`);
           rows.forEach((row, i) => {
             stmt.run(quantity * row[name], row.Date);
@@ -962,8 +960,6 @@ app.post('/portfolioAdd', (request, response) => {
             console.log(row)
           }
         )
-        })
-        db.close()
         response.json({"message":"success"})
         return
       })
