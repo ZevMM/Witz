@@ -887,9 +887,12 @@ app.get('/test2', (request, response) => {response.json({"message":"success"})})
 
 app.post('/portfolioAdd', (request, response) => {
   try {
+  
   const cat = request.body.cat
   const data = request.body.data
   const name = data[0]
+  console.time(`portfolioAdd (first) for ${name}`)
+  console.time(`portfolioAdd (final) for ${name}`)
   const principal = data[1]
   let date = data[2]
   date = 12 * (parseInt(date.slice(0,4)) - 2019) + parseInt(date.slice(5,7)) - 7
@@ -939,10 +942,19 @@ app.post('/portfolioAdd', (request, response) => {
         }
 
         const quantity = (principal / rows[date][name])
-        rows.forEach(row => {
-          db.run(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`,(quantity * row[name]), (row.Date), err => {if (err) {
-            console.error("Here!", err.message);
-        }})
+        rows.forEach((row, i) => {
+          
+          db.run(`UPDATE ${user} SET ${name} = ? WHERE Date = ?`,(quantity * row[name]), (row.Date), err => {
+            if (err) {
+              console.error("Here!", err.message);
+            }
+            if (i == 0) {
+              console.timeEnd(`portfolioAdd (first) for ${name}`)
+            }
+            if (i == rows.length - 1) {
+              console.timeEnd(`portfolioAdd (final) for ${name}`)
+            }
+          })
         })
 
         response.json({"message":"success"})
