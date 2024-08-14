@@ -90,11 +90,11 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
       {drop? <Dropdown options={options} setFilter={setFilter} setDrop={setDrop}/> : null}
       </div>
       <div className="label">Principal</div>
-      <input type="number" name="Quantity"  autoComplete='off' required/>
+      <input type="number" name="Quantity" min="1" autoComplete='off' required/>
       <div className="label">Date</div>
       <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
       <div className="label">Leverage</div>
-      <input type="number" name="Lev"  autoComplete='off' required/>
+      <input type="number" name="Lev" min="1" max="5" autoComplete='off' required/>
       <input type={"submit"} value="Add" />
       </form>
   )}
@@ -115,11 +115,11 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
       {drop? <Dropdown options={options} setFilter={setFilter} setDrop={setDrop}/> : null}
       </div>
       <div className="label">Principal</div>
-      <input type="number" name="Quantity"  autoComplete='off' required/>
+      <input type="number" name="Quantity" min="1" autoComplete='off' required/>
       <div className="label">Date</div>
       <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
       <div className="label">Leverage</div>
-      <input type="number" name="Lev"  autoComplete='off' required/>
+      <input type="number" name="Lev" min="1" max="5" autoComplete='off' required/>
       <input type={"submit"} value="Add" />
       </form>
   )}
@@ -140,11 +140,11 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
       {drop? <Dropdown options={options} setFilter={setFilter} setDrop={setDrop}/> : null}
       </div>
       <div className="label">Principal</div>
-      <input type="number" name="Quantity"  autoComplete='off' required/>
+      <input type="number" name="Quantity" min="1" autoComplete='off' required/>
       <div className="label">Date</div>
       <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
       <div className="label">Leverage</div>
-      <input type="number" name="Lev"  autoComplete='off' required/>
+      <input type="number" name="Lev" min="1" max="5" autoComplete='off' required/>
       <input type={"submit"} value="Add" />
       </form>
   )}
@@ -163,11 +163,11 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
   {drop? <Dropdown options={options} setFilter={setFilter} setDrop={setDrop}/> : null}
   </div>
   <div className="label">Principal</div>
-  <input type="number" name="Quantity"  autoComplete='off' required/>
+  <input type="number" name="Quantity" min="1" autoComplete='off' required/>
   <div className="label">Date</div>
   <input type="date" name="date"  autoComplete='off' min='2019-07-01' max='2024-06-30' required/>
   <div className="label">Leverage</div>
-  <input type="number" name="Lev" autoComplete='off' required/>
+  <input type="number" name="Lev" min="1" max="5" autoComplete='off' required/>
   <input type={"submit"} value="Add" />
   </form>
   )

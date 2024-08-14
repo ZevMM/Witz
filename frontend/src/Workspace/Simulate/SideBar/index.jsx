@@ -127,7 +127,7 @@ function SideBar({type, portfolio, simprops, levs}) {
 
           <form style={{width:"75%"}} onSubmit={(e) => runSim(e, setSimData, mall, mevents, setView, levs)}>
           <div className="label">Time Steps</div>
-          <input type="number" name="numsteps"  className="siminput" required/>
+          <input type="number" name="numsteps" min="5" max="75" className="siminput" required/>
           <div className="label">Type</div>
 
           <div style={{display:"flex", flexDirection:"row", alignItems:"center"}}>

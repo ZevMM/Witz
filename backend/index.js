@@ -875,7 +875,8 @@ app.post('/deleteuser', (request, response) => {
   try {
     db.run(`DROP TABLE IF EXISTS ${request.body.name}`, (err) => {if (err) {
       console.error(err.message);
-  }})
+    }
+  })
 
   response.json({"message":"success"})
   } catch (error) {
