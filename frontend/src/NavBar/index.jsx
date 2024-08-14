@@ -43,7 +43,7 @@ const FileMenu = ({cur, setCur, setPortfolio, setLevs}) => {
 
 const handleImport = (e, setCur, setPortfolio, setLevs) => {
   axios
-  .post('http://witz-zjkz.onrender.com/adduser', {name: "user123"})
+  .post('https://witz-zjkz.onrender.com/adduser', {name: "user123"})
   .then(() => {var reader = new FileReader();
   reader.readAsText(e.target.files[0], "UTF-8");
   reader.onload = (e) => {
@@ -54,7 +54,7 @@ const handleImport = (e, setCur, setPortfolio, setLevs) => {
       
       if (a.data.length > 1) {
         a.data.slice(1).forEach((r) => {
-          axios.post('http://witz-zjkz.onrender.com/portfolioAdd', {cat: a.alt, data: r})
+          axios.post('https://witz-zjkz.onrender.com/portfolioAdd', {cat: a.alt, data: r})
           .then(levs.push(r[3]))
         })
       }

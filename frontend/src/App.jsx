@@ -16,7 +16,7 @@ function App() {
       console.log('Window is closing!');
 
       axios
-      .post('http://witz-zjkz.onrender.com/deleteuser', {name: "user123"})
+      .post('https://witz-zjkz.onrender.com/deleteuser', {name: "user123"})
       
     };
 
@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
       axios
-      .post('http://witz-zjkz.onrender.com/adduser', {name: "user123"})
+      .post('https://witz-zjkz.onrender.com/adduser', {name: "user123"})
   }, []);
 
   const [mall, setMall] = useState(Array(50).fill(0).map((a,i) => { return {
