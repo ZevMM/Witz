@@ -961,8 +961,6 @@ app.post('/portfolioAdd', (request, response) => {
 
           stmt.finalize();
 
-        db.close()
-
         response.json({"message":"success"})
         return
       })
