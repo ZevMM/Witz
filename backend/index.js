@@ -959,11 +959,6 @@ app.post('/portfolioAdd', (request, response) => {
           })
 
           stmt.finalize();
-
-          db.get(`SELECT * FROM ${user}`, (err, row) => {
-            console.log(row)
-          }
-        )
         response.json({"message":"success"})
         return
       })
