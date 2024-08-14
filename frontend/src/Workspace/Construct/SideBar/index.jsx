@@ -124,7 +124,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
       </form>
   )}
 
-  if (cat == "1") {
+  if (cat == "bonds") {
     return (
       <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
       <div className="label">Type</div>
@@ -194,12 +194,10 @@ function SideBar({type, portfolio, setPortfolio,levs, setLevs}) {
           <div className="label">Category</div>
           <select onChange={(e) => setCat(e.target.value)}>
             
-            <option value="1">Bonds</option>
-            <option value="commodities">Commodities</option>
+            <option value="bonds">Bonds</option>
             <option value="crypto">Cryptocurrency</option>
             <option value="currency">Currency</option>
             <option value="ETFs">Exchange Traded Funds</option>
-            <option value="6">Hedge Funds</option>
             <option value="mutualFunds">Mutual Funds</option>
             <option value="realEstate">Real Estate</option>
             <option value="monthlyStock">Stocks</option>

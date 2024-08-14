@@ -93,7 +93,7 @@ const handleSubmit = (e, id, setID, mevents, mall, setMevents, setMall, mlayout,
 }
 
 //should query the database to figure out all the names but not gonna add much more so this is fine for now
-const indices = ["Global_Energy_Prices","US_Econ_Policy_Uncertainty","World_Econ_Policy_Uncertainty","CPI_US","AMERIBOR","Overnight_AMERIBOR","US_30y_Mortgage","Fed_Funds","SP500","DJIA","Bacon","DEXUSEU","Monetary_Base","Commericial_Paper_Outstanding","WEI","US_Housing_Inventory","Crude_Oil","USDX","JPY","Nikkei225","Russell2000","CBOE_Volatility"]
+const indices = ["Global_Energy_Prices","US_Econ_Policy_Uncertainty","World_Econ_Policy_Uncertainty","CPI_US","AMERIBOR","Overnight_AMERIBOR","US_30y_Mortgage","Fed_Funds","SP500","DJIA","Bacon","DEXUSEU","Monetary_Base","Commericial_Paper_Outstanding","WEI","US_Housing_Inventory","Crude_Oil","USDX","Nikkei225","Russell2000","CBOE_Volatility"]
 
 
 function SideBar({type, portfolio, simprops, levs}) {

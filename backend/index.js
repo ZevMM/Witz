@@ -618,7 +618,8 @@ app.post('/simulate', (request, response) => {
         const levs = request.body.levs
           db.all(`SELECT ${names.concat(allassets).join(",")} FROM monthlyStock INNER JOIN indices ON monthlyStock.Date = indices.DATE
           INNER JOIN ETFs ON indices.DATE = ETFs.Date
-          INNER JOIN crypto ON ETFs.Date = crypto.Date
+          INNER JOIN bonds ON ETFs.Date = bonds.Date
+          INNER JOIN crypto ON bonds.Date = crypto.Date
           INNER JOIN currency ON crypto.Date = currency.Date
           INNER JOIN mutualFunds ON currency.Date = mutualFunds.Date
           INNER JOIN realEstate ON realEstate.Date = mutualFunds.Date ORDER BY monthlyStock.Date`, function(err, rows) {
@@ -755,6 +756,19 @@ app.get('/monthlyStock', (request, response) => {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('monthlyStock');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+  })
+} catch (error) {
+  response.json({"error": error})
+}
+})
+
+app.get('/bonds', (request, response) => {
+  try {
+  let db = new sqlite3.Database('asset-values', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    db.all("SELECT name FROM PRAGMA_TABLE_INFO('bonds');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
 } catch (error) {
   response.json({"error": error})
