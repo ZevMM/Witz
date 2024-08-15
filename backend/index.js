@@ -936,8 +936,8 @@ app.get('/currency', (request, response) => {
 
 app.post('/adduser', (request, response) => {
   try{
-  console.log("new user")
   const user = request.body.username
+  console.log(user)
   db.run(`DROP TABLE IF EXISTS ${user}`, err => {
     db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
       if (err) {
