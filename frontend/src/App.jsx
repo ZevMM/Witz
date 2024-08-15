@@ -9,7 +9,7 @@ function App() {
 
   const [mode, setMode] = useState('')
   const [full, setFull] = useState(false)
-  const username = useState(`user${Math.random().toString(10).slice(2)}`)
+  const username = `user${Math.random().toString(10).slice(2)}`
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
