@@ -175,7 +175,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
 }
 
 function SideBar({type, portfolio, setPortfolio,levs, setLevs}) {
-  const [cat, setCat] = useState("monthlyStock")
+  const [cat, setCat] = useState("bonds")
   const [all, setAll] = useState([])
 
   useEffect(() => {

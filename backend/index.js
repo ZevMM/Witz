@@ -38,14 +38,18 @@ app.post('/totalvalue', (request, response) => {
       response.json({"error": err})
       return
     }
+    try {
     db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {
+      try {
       if (err) {
         console.error("error", err.message);
         response.json({"error": err})
         return
       }
-      response.json(Object.values(row).slice(1).reduce((sum, cur) => sum += cur).toFixed(2))
-    });
+      response.json(Object.values(row).slice(1).reduce((sum, cur) => sum += cur).toFixed(2))}
+      catch(error) {response.json({"error": error})}
+    });}
+    catch(error){}
   })
   } catch (error) {
     response.json({"error": error})
@@ -56,7 +60,9 @@ app.post('/totalvalue', (request, response) => {
 app.get('/volatility/:start', (request, response) => {
   try{
   let db = new sqlite3.Database('asset-values', (err) => {
+    try {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+      try {
       let returns = []
       for (let i = 1; i < rows.length; i++) {
         let prev = Object.values(rows[i]).slice(1).reduce((p,c) => p+c)
@@ -65,8 +71,10 @@ app.get('/volatility/:start', (request, response) => {
       }
       avg_return = returns.reduce((p,c) => p+c) / returns.length
       let volatility = Math.sqrt(returns.reduce((p,c,i) => p + (c - avg_return) ** 2, 0) / (rows.length - 1))
-      response.json(volatility.toFixed(6))
-    })
+      response.json(volatility.toFixed(6))}
+      catch(error) {response.json({"error": error})}
+    })}
+    catch(error){}
   })
   } catch (error) {
     response.json({"error": error})
@@ -119,7 +127,9 @@ app.get('/diversificationratio/:start', (request, response) => {
     if (err) {
       console.error("error", err.message);
     }
+    try {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+      try {
       let numassets = Object.keys(rows[0]).length - 1
       let prices = Array(numassets).fill(0).map(a => Array(rows.length))
       let LogReturns = Array(numassets).fill(0).map(a => Array(rows.length - 1))
@@ -148,8 +158,11 @@ app.get('/diversificationratio/:start', (request, response) => {
       let weightXcovXweight = covMatrix.map(r => (r.map((v,i) => v * weights[i])).reduce((p,c) => p + c)).map((v,i) => v*weights[i]).reduce((p,c) => p+c)
       stdDevs = stdDevs.map((v,i) => v * weights[i]).reduce((p,c) => p+c)
       response.json((stdDevs / Math.sqrt(weightXcovXweight)).toFixed(6))
-
-    })
+    }
+    catch (error) {
+      response.json({"error": error})}
+    })}
+    catch (error) {}
   })
   } catch (error) {
     response.json({"error": error})
@@ -163,7 +176,9 @@ app.get('/corrmatrix', (request, response) => {
     if (err) {
       console.error("error", err.message);
     }
+    try {
     db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rows) => {
+      try {
       let numassets = Object.keys(rows[0]).length - 1
       let prices = Array(numassets).fill(0).map(a => Array(rows.length))
       let LogReturns = Array(numassets).fill(0).map(a => Array(rows.length - 1))
@@ -221,8 +236,10 @@ app.get('/corrmatrix', (request, response) => {
       }
 
       response.json({corr: covMatrix,lag: lagMatrix})
-
-    })
+    }
+    catch (error) {}
+    })}
+    catch (error) {}
   })
   } catch (error) {
     response.json({"error": error})
@@ -245,11 +262,13 @@ function convertDateFormat(dateString) {
 app.get('/return/:start', (request, response) => {
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
+    try {
     db.all(`SELECT * FROM user123 WHERE Date = '2024-06-01' OR Date = '${request.params.start}' ORDER BY Date; `, (err,rows) => {
       let a = Object.values(rows[0]).slice(1).reduce((acc, cur) => acc + cur)
       let b = Object.values(rows[1]).slice(1).reduce((acc, cur) => acc + cur)
       response.json(((b-a)/a).toFixed(2))
-    })
+    })}
+    catch (error) {}
   })
   }
   catch (error) {
@@ -262,7 +281,9 @@ app.post('/areachart', (request, response) => {
   console.time("area")
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
+    try {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+      try {
       let df = pl.DataFrame(rows)
       let toReturn = []
       df.rows().forEach((row) => {
@@ -277,7 +298,10 @@ app.post('/areachart', (request, response) => {
       })
       response.json(toReturn)
       console.timeEnd("area")
-    })
+    }
+    catch (error) {}
+    })}
+    catch (error) {}
   })
   } catch (error) {
     response.json({"error": error})
@@ -291,7 +315,9 @@ app.post('/sectorchart', (request, response) => {
   try {
   portfolio = request.body
   let db = new sqlite3.Database('asset-values', (err) => {
+    try {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+      try {
       let toReturn = []
 
       console.timeEnd("checkpoint 1")
@@ -321,7 +347,9 @@ app.post('/sectorchart', (request, response) => {
       })
       response.json(toReturn)
       console.timeEnd("sector")
-    })
+    } catch (error) {}
+    })}
+    catch (error){}
   })
   } catch (error) {
     response.json({"error": error})
@@ -332,7 +360,9 @@ app.get('/sharpe/:start', (request, response) => {
   //once I add bonds, use the 10-year yield for risk free rate
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
+    try {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+      try {
       let returns = []
       for (let i = 1; i < rows.length; i++) {
         let prev = Object.values(rows[i]).slice(1).reduce((p,c) => p+c)
@@ -342,7 +372,9 @@ app.get('/sharpe/:start', (request, response) => {
       avg_return = returns.reduce((p,c) => p+c) / returns.length
       let volatility = Math.sqrt(returns.reduce((p,c,i) => p + (c - avg_return) ** 2, 0) / (rows.length - 1))
       response.json(((avg_return - 0.04) / volatility).toFixed(6))
-    })
+    } catch (error) {}
+    })}
+    catch (error){}
   })
   } catch (error) {
     response.json({"error": error})
@@ -353,10 +385,14 @@ app.get('/ulcer/:start', (request, response) => {
   try {
     let db = new sqlite3.Database('asset-values', (err) => {
       db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+        try {
         let vals = rows.map(row => Object.values(row).slice(1).reduce((p,c) => p+c, 0))
         axios.post('https://api.portfoliooptimizer.io/v1/portfolio/analysis/ulcer-index', {"portfolios" : [{"portfolioValues":vals}]})
         .then((r) => {
-          response.json(r.data['portfolios'][0]['portfolioUlcerIndex'].toFixed(6))})
+          try {
+          response.json(r.data['portfolios'][0]['portfolioUlcerIndex'].toFixed(6))}
+        catch(error){response.json({"error": error})}})
+        } catch (error) {}
       })
     })
     } catch (error) {
@@ -373,14 +409,17 @@ app.get('/ulcer/:start', (request, response) => {
     let all = []
     let cats = []
     const colors = ["#ed6268", "#7aa5e2", "#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
-
+    
     let db = new sqlite3.Database('asset-values', (err) => {
+      try {
       if (err) {
         console.error("error", err.message);
+        return
       }
       //make sure this is newest, not oldest
 
-      db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {  
+      db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {
+        try {  
         portfolio.forEach((c, q) => {
           if (c.data.length > 1) {
             let prices = c.data.slice(1).map(d => {return {name: d[0], val: row[d[0]]}})
@@ -397,9 +436,12 @@ app.get('/ulcer/:start', (request, response) => {
           "data1" : all,
           "data2" : cats
         }
-        response.json(toReturn)
+        response.json(toReturn)}
+        catch(error) {response.json({"error": error})}
       });
-    })} catch (error) {
+    }
+    catch(error) {response.json({"error": error})}
+  })} catch (error) {
     response.json({"error": error})
   }
 })
@@ -410,8 +452,11 @@ app.get('/riskpiechart', (request, response) => {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
+      response.json({"error": err.message})
+      return
     }
     db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rows) => {
+      try {
       let numassets = Object.keys(rows[0]).length - 1
       let prices = Array(numassets).fill(0).map(a => Array(rows.length))
       let LogReturns = Array(numassets).fill(0).map(a => Array(rows.length - 1))
@@ -452,7 +497,8 @@ app.get('/riskpiechart', (request, response) => {
       } )
       
       response.json(pcts)
-
+    }
+    catch(error) {response.json({"error": error})}
     })
   })
   } catch (error) {
@@ -464,11 +510,14 @@ app.get('/riskpiechart', (request, response) => {
 app.post('/tstable', (request, response) => {
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+    db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {
+      try {  
       let df = pl.DataFrame(rows)
       let toReturn = df.toObject()
 
       response.json(toReturn)
+      }
+      catch(error) {response.json({"error": error})}
     })
   })
   } catch (error) {
@@ -482,6 +531,7 @@ app.get('/returngraph/:start', (request, response) => {
   //I should make the keys the asset names
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, function(err, rows) {
+      try {
       let names = Object.keys(rows[0]).slice(1)
       let toReturn = []
       rows.forEach(row => {
@@ -496,6 +546,8 @@ app.get('/returngraph/:start', (request, response) => {
       response.json(toReturn)
 
       console.timeEnd("returngraph")
+    }
+    catch (error) {response.json({"error": error})}
 })})
 } catch (error) {
   response.json({"error": error})
@@ -504,13 +556,15 @@ app.get('/returngraph/:start', (request, response) => {
 
 app.get('/risks', (request, response) => {
   try {
-  let db = new sqlite3.Database('asset-values', (err) => {
+
     db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rowZ) => {
+      try {
       let totalvalue = rowZ.map(row => {
         return Object.values(row).slice(1).reduce((acc,cur) => acc + cur)
       })
 
       db.all(`SELECT * FROM indices ORDER BY DATE;`, (err, rows) => {
+        try {
         rows = rows.slice(0,-1) //super hacky, should really do a join on date
         let indices = Array(Object.values(rows[0]).length - 1).fill(0).map(i => new Array)
         rows.map((row) => {
@@ -551,9 +605,11 @@ app.get('/risks', (request, response) => {
         let high = risks.filter((v) => v.val >= 0.01)
         let moderate = risks.slice(high.length)
         response.json({high: high, moderate: moderate})
-      })
+      }
+      catch(error) {response.json({"error": error})}
+      })}
+      catch(error) {response.json({"error": error})}
     })
-  })
   } catch (error) {
     response.json({"error": error})
   }
@@ -564,6 +620,7 @@ app.post('/linegraph', (request, response) => {
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+      try {
       let df = pl.DataFrame(rows)
       let toReturn = []
       let avgs = []
@@ -579,6 +636,8 @@ app.post('/linegraph', (request, response) => {
         toReturn.push(entry)
       })
       response.json(toReturn)
+    }
+    catch(error) {response.json({"error": error})}
     })
   })
   } catch (error) {
@@ -594,6 +653,7 @@ app.post('/simulate', (request, response) => {
         console.error(err.message);
     }
     db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => {
+      try {
       const allassets = rows.slice(1).map(o => o.name) 
       db.get("SELECT * FROM user123 ORDER BY Date DESC", (err, row) => {
         const initvalues = Object.values(row).slice(1)
@@ -624,7 +684,7 @@ app.post('/simulate', (request, response) => {
           INNER JOIN mutualFunds ON currency.Date = mutualFunds.Date
           INNER JOIN realEstate ON realEstate.Date = mutualFunds.Date ORDER BY monthlyStock.Date`, function(err, rows) {
   
-            
+            try {
             let df = pl.DataFrame(rows)
             let drifts = []
             let vols = []
@@ -726,9 +786,12 @@ app.post('/simulate', (request, response) => {
             }
             
             response.json(toReturn)
+          }
+          catch(error) {response.json({"error": error})}
         })
       })
-    })
+    }catch (error){}}
+  )
   })
   } catch (error) {
     response.json({"error": error})
@@ -937,7 +1000,7 @@ app.post('/portfolioAdd', (request, response) => {
           response.json({"message":"error"})
           return
         }
-        
+        try {
         if (leverage > 1) {
           let returns = []
           for(let i = 1; i < rows.length; i++) {
@@ -978,6 +1041,8 @@ app.post('/portfolioAdd', (request, response) => {
 
         response.json({"message":"success"})
         return
+        }
+        catch(error) {}
       })
     })
   } catch (error) {
