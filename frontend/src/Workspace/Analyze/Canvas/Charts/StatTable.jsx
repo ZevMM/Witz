@@ -76,7 +76,7 @@ function convertDateFormat(dateString) {
 }
 
 
-const StatTable = ({portfolio}) => {
+const StatTable = ({portfolio, username}) => {
     
     const [data, setData] = useState(null)
     const [range, setRange] = useState(36)
@@ -86,7 +86,7 @@ const StatTable = ({portfolio}) => {
     const [filter, setFilter] = useState("Select")
 
     useEffect(() => {
-        axios.get('https://witz-zjkz.onrender.com/myportfolio')
+        axios.post('https://witz-zjkz.onrender.com/myportfolio', {username: username})
         .then(response => {
           setAssets(response.data)
           setActiveAssets(response.data)
@@ -95,7 +95,7 @@ const StatTable = ({portfolio}) => {
 
     useEffect(()=> {
         axios
-        .post('https://witz-zjkz.onrender.com/tstable', portfolio)
+        .post('https://witz-zjkz.onrender.com/tstable', {portfolio: portfolio, username: username})
         .then((response) => {
             setData(response.data)
         })

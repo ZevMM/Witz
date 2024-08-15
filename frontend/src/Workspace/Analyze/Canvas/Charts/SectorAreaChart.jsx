@@ -60,7 +60,7 @@ const AssetSelect = ({filter, setFilter, allnames, active, setActive}) => {
   </div>
 )}
 
-const RenderSectorChart = ({portfolio}) => {
+const RenderSectorChart = ({portfolio, username}) => {
   const [data, setData] = useState(null)
   const [showing, setShowing] = useState(null)
   const [allnames, setAllNames] = useState(portfolio.map(cat => cat.title))
@@ -69,7 +69,7 @@ const RenderSectorChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .post('https://witz-zjkz.onrender.com/sectorchart', portfolio)
+    .post('https://witz-zjkz.onrender.com/sectorchart', {portfolio: portfolio, username: username})
     .then(response => {
         setData(response.data)
         setShowing(response.data)

@@ -6,7 +6,7 @@ import axios from 'axios'
 
 const ActionElement = ({text, handleClick}) => <span className="actionelement" onClick={handleClick}>{text}</span>
 
-function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsUpdated, report, setReport}) {
+function Analyze({username, isUpdated, layout, setLayout, full, setFull, portfolio, setIsUpdated, report, setReport}) {
     console.log(layout)
     /*
     useEffect(() => {
@@ -51,7 +51,7 @@ function Analyze({isUpdated, layout, setLayout, full, setFull, portfolio, setIsU
                 <FullButton />
             </div>
             <div style={{overflowY:"auto", paddingBottom:"100px", height:"100%"}}>
-              <Canvas layout={layout} setLayout={setLayout} report={report} portfolio={portfolio}/>
+              <Canvas username={username} layout={layout} setLayout={setLayout} report={report} portfolio={portfolio}/>
             </div>
         </div>
         <SideBar type={side} layout={layout} setLayout={setLayout} />

@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from 'axios'
 
-const Widget1 = ({portfolio}) => {
+const Widget1 = ({portfolio, username}) => {
     const [data, setData] = useState("loading...")
     
     useEffect(() => {
         console.log("re-requesting total value")
         axios
-        .post('https://witz-zjkz.onrender.com/totalvalue', portfolio)
+        .post('https://witz-zjkz.onrender.com/totalvalue', {username: username})
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -27,14 +27,14 @@ const Widget1 = ({portfolio}) => {
     </div>
 )}
 
-const Widget2 = ({portfolio}) => {
+const Widget2 = ({portfolio, username}) => {
     const [data, setData] = useState("loading...")
     const [start, setStart] = useState('2019-07-01')
 
     useEffect(() => {
         console.log("re-requesting volatility", start)
         axios
-        .get(`https://witz-zjkz.onrender.com/volatility/${start}`)
+        .post(`https://witz-zjkz.onrender.com/volatility/${start}`,  {username: username})
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -60,13 +60,13 @@ const Widget2 = ({portfolio}) => {
     </div>
 )}
 
-const Widget3 = ({portfolio}) => {
+const Widget3 = ({portfolio, username}) => {
     const [data, setData] = useState("loading...")
     const [start, setStart] = useState('2019-07-01')
 
     useEffect(() => {
         axios
-        .get(`https://witz-zjkz.onrender.com/diversificationratio/${start}`)
+        .post(`https://witz-zjkz.onrender.com/diversificationratio/${start}`,  {username: username})
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -92,13 +92,13 @@ const Widget3 = ({portfolio}) => {
     </div>
 )}
 
-const Widget4 = ({portfolio}) => {
+const Widget4 = ({portfolio, username}) => {
     const [data, setData] = useState("loading...")
     const [start, setStart] = useState('2019-07-01')
 
     useEffect(() => {
         axios
-        .get(`https://witz-zjkz.onrender.com/sharpe/${start}`)
+        .post(`https://witz-zjkz.onrender.com/sharpe/${start}`,  {username: username})
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -125,13 +125,13 @@ const Widget4 = ({portfolio}) => {
     </div>
 )}
 
-const Widget5 = ({portfolio}) => {
+const Widget5 = ({portfolio, username}) => {
     const [data, setData] = useState("loading...")
     const [start, setStart] = useState('2019-07-01')
 
     useEffect(() => {
         axios
-        .get(`https://witz-zjkz.onrender.com/ulcer/${start}`)
+        .post(`https://witz-zjkz.onrender.com/ulcer/${start}`,  {username: username})
         .then(response => {
             console.log(response.data)
             setData(response.data)
@@ -157,13 +157,13 @@ const Widget5 = ({portfolio}) => {
     </div>
 )}
 
-const Widget6 = ({portfolio}) => {
+const Widget6 = ({portfolio, username}) => {
     const [data, setData] = useState("loading...")
     const [start, setStart] = useState('2019-07-01')
 
     useEffect(() => {
         axios
-        .get(`https://witz-zjkz.onrender.com/return/${start}`)
+        .post(`https://witz-zjkz.onrender.com/return/${start}`,  {username: username})
         .then(response => {
             console.log(response.data)
             setData(response.data)

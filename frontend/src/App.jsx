@@ -9,6 +9,7 @@ function App() {
 
   const [mode, setMode] = useState('')
   const [full, setFull] = useState(false)
+  const username = useState(`user${Math.random().toString(10).slice(2)}`)
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -16,7 +17,7 @@ function App() {
       console.log('Window is closing!');
 
       axios
-      .post('https://witz-zjkz.onrender.com/deleteuser', {name: "user123"})
+      .post('https://witz-zjkz.onrender.com/deleteuser', {username: username})
       
     };
 
@@ -26,7 +27,7 @@ function App() {
 
   useEffect(() => {
       axios
-      .post('https://witz-zjkz.onrender.com/adduser', {name: "user123"})
+      .post('https://witz-zjkz.onrender.com/adduser', {username: username})
   }, []);
 
   const [mall, setMall] = useState(Array(50).fill(0).map((a,i) => { return {
@@ -70,9 +71,9 @@ function App() {
 
   return (
     <div id="container">
-      <NavBar full={full} setPortfolio={setPortfolio} setLevs={setLevs}/>
+      <NavBar full={full} setPortfolio={setPortfolio} setLevs={setLevs} username={username}/>
       <ModeBar mode={mode} setMode={setMode} full={full}/>
-      <Workspace mode={mode} full={full} setFull={setFull} simprops={simprops} levs={levs} setLevs={setLevs} portfolio={portfolio} setPortfolio={setPortfolio}/>
+      <Workspace username={username} mode={mode} full={full} setFull={setFull} simprops={simprops} levs={levs} setLevs={setLevs} portfolio={portfolio} setPortfolio={setPortfolio}/>
     </div>
   )
 }

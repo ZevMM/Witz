@@ -31,6 +31,7 @@ db.configure('busyTimeout', 6000);
 
 
 app.post('/totalvalue', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
@@ -38,8 +39,9 @@ app.post('/totalvalue', (request, response) => {
       response.json({"error": err})
       return
     }
+    
     try {
-    db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {
+    db.get(`SELECT * FROM ${username} ORDER BY Date DESC`, function(err, row) {
       try {
       if (err) {
         console.error("error", err.message);
@@ -57,11 +59,12 @@ app.post('/totalvalue', (request, response) => {
 })
 
 
-app.get('/volatility/:start', (request, response) => {
+app.post('/volatility/:start', (request, response) => {
+  username = request.body.username
   try{
   let db = new sqlite3.Database('asset-values', (err) => {
     try {
-    db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+    db.all(`SELECT * FROM ${username} WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
       try {
       let returns = []
       for (let i = 1; i < rows.length; i++) {
@@ -121,14 +124,15 @@ app.post('/volatility', (request, response) => {
 })
 */
 
-app.get('/diversificationratio/:start', (request, response) => {
+app.post('/diversificationratio/:start', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
     try {
-    db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+    db.all(`SELECT * FROM ${username} WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
       try {
       let numassets = Object.keys(rows[0]).length - 1
       let prices = Array(numassets).fill(0).map(a => Array(rows.length))
@@ -170,14 +174,15 @@ app.get('/diversificationratio/:start', (request, response) => {
 })
 
 
-app.get('/corrmatrix', (request, response) => {
+app.post('/corrmatrix', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
       console.error("error", err.message);
     }
     try {
-    db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rows) => {
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, (err, rows) => {
       try {
       let numassets = Object.keys(rows[0]).length - 1
       let prices = Array(numassets).fill(0).map(a => Array(rows.length))
@@ -259,11 +264,12 @@ function convertDateFormat(dateString) {
   return `${month}-${day}-${shortYear}`;
 }
 
-app.get('/return/:start', (request, response) => {
+app.post('/return/:start', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     try {
-    db.all(`SELECT * FROM user123 WHERE Date = '2024-06-01' OR Date = '${request.params.start}' ORDER BY Date; `, (err,rows) => {
+    db.all(`SELECT * FROM ${username} WHERE Date = '2024-06-01' OR Date = '${request.params.start}' ORDER BY Date; `, (err,rows) => {
       let a = Object.values(rows[0]).slice(1).reduce((acc, cur) => acc + cur)
       let b = Object.values(rows[1]).slice(1).reduce((acc, cur) => acc + cur)
       response.json(((b-a)/a).toFixed(2))
@@ -278,11 +284,12 @@ app.get('/return/:start', (request, response) => {
 
 
 app.post('/areachart', (request, response) => {
+  username = request.body.username
   console.time("area")
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     try {
-    db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, function(err, rows) {  
       try {
       let df = pl.DataFrame(rows)
       let toReturn = []
@@ -313,10 +320,11 @@ app.post('/sectorchart', (request, response) => {
   console.time("sector")
   console.time("checkpoint 1")
   try {
-  portfolio = request.body
+  portfolio = request.body.portfolio
+  username = request.body.username
   let db = new sqlite3.Database('asset-values', (err) => {
     try {
-    db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, function(err, rows) {  
       try {
       let toReturn = []
 
@@ -356,12 +364,13 @@ app.post('/sectorchart', (request, response) => {
   }
 })
 
-app.get('/sharpe/:start', (request, response) => {
+app.post('/sharpe/:start', (request, response) => {
   //once I add bonds, use the 10-year yield for risk free rate
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     try {
-    db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+    db.all(`SELECT * FROM ${username} WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
       try {
       let returns = []
       for (let i = 1; i < rows.length; i++) {
@@ -381,10 +390,11 @@ app.get('/sharpe/:start', (request, response) => {
   }
 })
 
-app.get('/ulcer/:start', (request, response) => {
+app.post('/ulcer/:start', (request, response) => {
+  username = request.body.username
   try {
     let db = new sqlite3.Database('asset-values', (err) => {
-      db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
+      db.all(`SELECT * FROM ${username} WHERE Date > '${request.params.start}' ORDER BY Date`, (err, rows) => {
         try {
         let vals = rows.map(row => Object.values(row).slice(1).reduce((p,c) => p+c, 0))
         axios.post('https://api.portfoliooptimizer.io/v1/portfolio/analysis/ulcer-index', {"portfolios" : [{"portfolioValues":vals}]})
@@ -402,7 +412,8 @@ app.get('/ulcer/:start', (request, response) => {
 
   app.post('/valuepiechart', (request, response) => {
     try {
-    const portfolio = request.body
+    const portfolio = request.body.portfolio
+    username = request.body.username
 
 
     let stocks = portfolio[0]["data"].slice(1)
@@ -418,7 +429,7 @@ app.get('/ulcer/:start', (request, response) => {
       }
       //make sure this is newest, not oldest
 
-      db.get(`SELECT * FROM user123 ORDER BY Date DESC`, function(err, row) {
+      db.get(`SELECT * FROM ${username} ORDER BY Date DESC`, function(err, row) {
         try {  
         portfolio.forEach((c, q) => {
           if (c.data.length > 1) {
@@ -447,7 +458,8 @@ app.get('/ulcer/:start', (request, response) => {
 })
 
 
-app.get('/riskpiechart', (request, response) => {
+app.post('/riskpiechart', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
@@ -455,7 +467,7 @@ app.get('/riskpiechart', (request, response) => {
       response.json({"error": err.message})
       return
     }
-    db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rows) => {
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, (err, rows) => {
       try {
       let numassets = Object.keys(rows[0]).length - 1
       let prices = Array(numassets).fill(0).map(a => Array(rows.length))
@@ -508,9 +520,10 @@ app.get('/riskpiechart', (request, response) => {
 
 
 app.post('/tstable', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, function(err, rows) {
       try {  
       let df = pl.DataFrame(rows)
       let toReturn = df.toObject()
@@ -525,12 +538,13 @@ app.post('/tstable', (request, response) => {
   }
 })
 
-app.get('/returngraph/:start', (request, response) => {
+app.post('/returngraph/:start', (request, response) => {
+  username = request.body.username
   console.time("returngraph")
   try {
   //I should make the keys the asset names
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT * FROM user123 WHERE Date > '${request.params.start}' ORDER BY Date`, function(err, rows) {
+    db.all(`SELECT * FROM ${username} WHERE Date > '${request.params.start}' ORDER BY Date`, function(err, rows) {
       try {
       let names = Object.keys(rows[0]).slice(1)
       let toReturn = []
@@ -554,10 +568,11 @@ app.get('/returngraph/:start', (request, response) => {
 }
 })
 
-app.get('/risks', (request, response) => {
+app.post('/risks', (request, response) => {
+  username = request.body.username
   try {
 
-    db.all(`SELECT * FROM user123 ORDER BY Date`, (err, rowZ) => {
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, (err, rowZ) => {
       try {
       let totalvalue = rowZ.map(row => {
         return Object.values(row).slice(1).reduce((acc,cur) => acc + cur)
@@ -616,10 +631,10 @@ app.get('/risks', (request, response) => {
 })
 
 app.post('/linegraph', (request, response) => {
-  
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT * FROM user123 ORDER BY Date`, function(err, rows) {  
+    db.all(`SELECT * FROM ${username} ORDER BY Date`, function(err, rows) {  
       try {
       let df = pl.DataFrame(rows)
       let toReturn = []
@@ -647,15 +662,16 @@ app.post('/linegraph', (request, response) => {
 
 
 app.post('/simulate', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
-    db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => {
+    db.all(`SELECT name FROM PRAGMA_TABLE_INFO('${username}');`, (err, rows) => {
       try {
       const allassets = rows.slice(1).map(o => o.name) 
-      db.get("SELECT * FROM user123 ORDER BY Date DESC", (err, row) => {
+      db.get(`SELECT * FROM ${username} ORDER BY Date DESC`, (err, row) => {
         const initvalues = Object.values(row).slice(1)
         let toReturn = []
   
@@ -799,13 +815,14 @@ app.post('/simulate', (request, response) => {
 
 })
 
-app.get('/myportfolio', (request, response) => {
+app.post('/myportfolio', (request, response) => {
+  username = request.body.username
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
     if (err) {
         console.error(err.message);
     }
-    db.all("SELECT name FROM PRAGMA_TABLE_INFO('user123');", (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
+    db.all(`SELECT name FROM PRAGMA_TABLE_INFO('${username}');`, (err, rows) => response.json(rows.slice(1).map(o => o.name)) )
   })
 } catch (error) {
   response.json({"error": error})
@@ -920,7 +937,7 @@ app.get('/currency', (request, response) => {
 app.post('/adduser', (request, response) => {
   try{
   console.log("new user")
-  const user = request.body.name
+  const user = request.body.username
   db.run(`DROP TABLE IF EXISTS ${user}`, err => {
     db.run(`CREATE TABLE ${user}(Date date)`, (err) => {
       if (err) {
@@ -950,7 +967,7 @@ app.post('/adduser', (request, response) => {
 
 app.post('/deleteuser', (request, response) => {
   try {
-    db.run(`DROP TABLE IF EXISTS ${request.body.name}`, (err) => {if (err) {
+    db.run(`DROP TABLE IF EXISTS ${request.body.username}`, (err) => {if (err) {
       console.error(err.message);
     }
   })
@@ -964,7 +981,7 @@ app.post('/deleteuser', (request, response) => {
 app.get('/test', (request, response) => {
   try {
   let db = new sqlite3.Database('asset-values', (err) => {
-    db.all(`SELECT * FROM "user123"`, (err, rows) => console.log(err, rows))
+    db.all(`SELECT * FROM "${username}"`, (err, rows) => console.log(err, rows))
   })
   } catch (error) {
     response.json({"error": error})
@@ -975,6 +992,7 @@ app.get('/test2', (request, response) => {response.json({"message":"success"})})
 
 
 app.post('/portfolioAdd', (request, response) => {
+  
   try {
   
   const cat = request.body.cat
@@ -986,7 +1004,7 @@ app.post('/portfolioAdd', (request, response) => {
   let date = data[2]
   date = 12 * (parseInt(date.slice(0,4)) - 2019) + parseInt(date.slice(5,7)) - 7
   const leverage = data[3]
-  const user = "user123"
+  const user = request.body.username
 
     db.run(`ALTER TABLE ${user} ADD COLUMN ${name} number`, (err) => {
       if (err) {

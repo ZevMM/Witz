@@ -60,7 +60,7 @@ const AssetSelect = ({filter, setFilter, allnames, active, setActive}) => {
   </div>
 )}
 
-const RenderAreaChart = ({portfolio}) => {
+const RenderAreaChart = ({portfolio, username}) => {
   const [data, setData] = useState(null)
   const [showing, setShowing] = useState(null)
   const [allnames, setAllNames] = useState([])
@@ -68,7 +68,7 @@ const RenderAreaChart = ({portfolio}) => {
   const [filter, setFilter] = useState('Select')
 
   useEffect(() => {
-    axios.get('https://witz-zjkz.onrender.com/myportfolio')
+    axios.post('https://witz-zjkz.onrender.com/myportfolio', {username: username})
     .then(response => {
       setAllNames(response.data)
       setActive(response.data.slice(0,5))
@@ -77,7 +77,7 @@ const RenderAreaChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .post('https://witz-zjkz.onrender.com/areachart', portfolio)
+    .post('https://witz-zjkz.onrender.com/areachart', {portfolio: portfolio, username: username})
     .then(response => {
         setData(response.data)
         setShowing(response.data)

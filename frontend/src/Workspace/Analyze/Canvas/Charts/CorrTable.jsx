@@ -40,13 +40,13 @@ const CheckboxDropdown = ({all, assets, setAssets}) => {
     </div>
 )}
 
-const CorrTable = () => {
+const CorrTable = ({username}) => {
     
     const [data, setData] = useState(null)
     const [assets, setAssets] = useState([])
 
     useEffect(() => {
-        axios.get('https://witz-zjkz.onrender.com/myportfolio')
+        axios.post('https://witz-zjkz.onrender.com/myportfolio', {username: username})
         .then(response =>
           setAssets(response.data)
         )
@@ -55,7 +55,7 @@ const CorrTable = () => {
     useEffect(()=> {
         
         axios
-        .get('https://witz-zjkz.onrender.com/corrmatrix')
+        .post('https://witz-zjkz.onrender.com/corrmatrix', {username: username})
         .then((response) => {
             
             setData({corr: response.data.corr,
@@ -95,7 +95,7 @@ const CorrTable = () => {
                         return(
                             <tr>
                                 <td style={{color:"black", fontWeight:"400"}}>{assets[i]}</td>
-                                {row.map((v,x) => <td className={`td${data.lag[i][x]}`} style={data.lag[i][x] == 0? {color:`rgb(0,0,0,${v})`}:{color:`rgb(255,255,255,${v})`}}>{v}</td>)}
+                                {row.map((v,x) => <td className={`td${data.lag[i][x]}`} style={data.lag[i][x] == 0? {color:`rgb(0,0,0,${Math.abs(v)})`}:{color:`rgb(255,255,255,${Math.abs(v)})`}}>{v}</td>)}
                             </tr>
                         )
                     })}

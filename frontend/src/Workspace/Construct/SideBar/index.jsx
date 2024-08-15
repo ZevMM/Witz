@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './index.css'
 import axios from 'axios'
 
-const submitForm = (e, cat, portfolio, setPortfolio, setFilter, levs, setLevs) => {
+const submitForm = (username, e, cat, portfolio, setPortfolio, setFilter, levs, setLevs) => {
   e.preventDefault()
   let formData = new FormData(e.target)
 
@@ -27,7 +27,7 @@ const submitForm = (e, cat, portfolio, setPortfolio, setFilter, levs, setLevs) =
 
   setPortfolio(copy)
 
-  axios.post('https://witz-zjkz.onrender.com/portfolioAdd', {cat: cat, data: formData})
+  axios.post('https://witz-zjkz.onrender.com/portfolioAdd', {cat: cat, data: formData, username: username})
 
   e.target.reset()
   setFilter("")
@@ -61,7 +61,7 @@ const Bond = ({cat, portfolio, setPortfolio}) => {
 )}
 
 
-const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
+const Inputs = ({username, all, cat, portfolio, setPortfolio,levs, setLevs}) => {
 
   const [filter, setFilter] = useState("")
   const [drop, setDrop] = useState(false)
@@ -77,7 +77,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
 
   if (cat == "realEstate") {
     return (
-      <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
+      <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(username, e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
       <div className="label">Region</div>
       <div onFocus={() => setDrop(true)}
       onBlur={(e) => {
@@ -101,7 +101,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
 
   if (cat == "6") {
     return (
-      <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
+      <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(username, e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
       <div className="label">Name</div>
       <div onFocus={() => setDrop(true)}
       onBlur={(e) => {
@@ -126,7 +126,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
 
   if (cat == "bonds") {
     return (
-      <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
+      <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(username, e, cat, portfolio, setPortfolio, setFilter, levs, setLevs)}>
       <div className="label">Type</div>
       <div onFocus={() => setDrop(true)}
       onBlur={(e) => {
@@ -150,7 +150,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
   )}
 
   return (
-  <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(e, cat, portfolio, setPortfolio, setFilter,levs, setLevs)}>
+  <form style={{display: "flex", flexDirection: "column", width: "75%"}} onSubmit={(e) => submitForm(username, e, cat, portfolio, setPortfolio, setFilter,levs, setLevs)}>
   <div className="label" >Symbol</div>
   <div onFocus={() => setDrop(true)}
   onBlur={(e) => {
@@ -174,7 +174,7 @@ const Inputs = ({all, cat, portfolio, setPortfolio,levs, setLevs}) => {
 
 }
 
-function SideBar({type, portfolio, setPortfolio,levs, setLevs}) {
+function SideBar({username, type, portfolio, setPortfolio,levs, setLevs}) {
   const [cat, setCat] = useState("bonds")
   const [all, setAll] = useState([])
 
@@ -205,7 +205,7 @@ function SideBar({type, portfolio, setPortfolio,levs, setLevs}) {
           </select>
         </form>
         <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
-        <Inputs all={all} cat={cat} portfolio={portfolio} setPortfolio={setPortfolio} levs={levs} setLevs={setLevs}/>
+        <Inputs username={username} all={all} cat={cat} portfolio={portfolio} setPortfolio={setPortfolio} levs={levs} setLevs={setLevs}/>
       </div>
     )
   }

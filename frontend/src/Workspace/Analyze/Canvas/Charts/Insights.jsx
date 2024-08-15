@@ -5,11 +5,11 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from 'axios'
 
-const Risks = ({}) => {
+const Risks = ({username}) => {
     const [data, setData] = useState(null)
 
     useEffect(() => {
-        axios.get('https://witz-zjkz.onrender.com/risks')
+        axios.post('https://witz-zjkz.onrender.com/risks', ({username: username}))
         .then((response) => {
             console.log(response.data)
             setData(response.data)

@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 
-const RenderRiskChart = ({portfolio}) => {
+const RenderRiskChart = ({portfolio, username}) => {
   const [data, setData] = useState(null)
   
   useEffect(() => {
     axios
-    .get('https://witz-zjkz.onrender.com/riskpiechart')
+    .post('https://witz-zjkz.onrender.com/riskpiechart', {username: username})
     .then(response => {
         console.log(response.data)
         setData(response.data)

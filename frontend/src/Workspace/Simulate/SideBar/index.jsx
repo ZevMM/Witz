@@ -21,7 +21,7 @@ const getTaskPos = (id, portfolio) => {
   return portfolio.findIndex(element => element.id == id)
 }
 
-const runSim = (e, setSimData, all, events, setView, levs) => {
+const runSim = (username, e, setSimData, all, events, setView, levs) => {
   e.preventDefault()
   let numsteps = e.target.numsteps.value
   let type = e.target.type.value
@@ -60,7 +60,7 @@ const runSim = (e, setSimData, all, events, setView, levs) => {
   console.log("formatted", formatted)
 
   axios
-  .post('https://witz-zjkz.onrender.com/simulate', {levs: levs, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps, rebalance: rebalance})
+  .post('https://witz-zjkz.onrender.com/simulate', {username: username, levs: levs, events: formatted, names: ordered, numsims: numsims, numsteps: numsteps, rebalance: rebalance})
   .then(response => {
     console.log(response)
     setSimData(response.data)
@@ -96,7 +96,7 @@ const handleSubmit = (e, id, setID, mevents, mall, setMevents, setMall, mlayout,
 const indices = ["Global_Energy_Prices","US_Econ_Policy_Uncertainty","World_Econ_Policy_Uncertainty","CPI_US","AMERIBOR","Overnight_AMERIBOR","US_30y_Mortgage","Fed_Funds","SP500","DJIA","Bacon","DEXUSEU","Monetary_Base","Commericial_Paper_Outstanding","WEI","US_Housing_Inventory","Crude_Oil","USDX","Nikkei225","Russell2000","CBOE_Volatility"]
 
 
-function SideBar({type, portfolio, simprops, levs}) {
+function SideBar({username, type, portfolio, simprops, levs}) {
   console.log("levs", levs)
   let range, setSimData, mall, mevents, setMall, setMevents, mlayout, setMlayout, setView;
   ({range, setSimData, mall, mevents, setMall, setMevents, mlayout, setMlayout, setView} = simprops)
@@ -125,7 +125,7 @@ function SideBar({type, portfolio, simprops, levs}) {
           <h3>Control Panel</h3>
           <div style={{ borderTop: "1px solid black ", width: 100, height: 2, marginTop: "15px", marginBottom: "15px"}}></div>
 
-          <form style={{width:"75%"}} onSubmit={(e) => runSim(e, setSimData, mall, mevents, setView, levs)}>
+          <form style={{width:"75%"}} onSubmit={(e) => runSim(username, e, setSimData, mall, mevents, setView, levs)}>
           <div className="label">Time Steps</div>
           <input type="number" name="numsteps" min="5" max="75" className="siminput" required/>
           <div className="label">Type</div>

@@ -63,7 +63,7 @@ const AssetSelect = ({filter, setFilter, allnames, active, setActive}) => {
 )}
 const colors = ["#23438a", "#5d439c", "#ffc658", "#d24c84", "#a4479f", "#23438a", "#5d439c"]
 
-const RenderLineChart = ({portfolio}) => {
+const RenderLineChart = ({portfolio, username}) => {
   const [data, setData] = useState(null)
   const [showing, setShowing] = useState(null)
   const [allnames, setAllNames] = useState([])
@@ -71,7 +71,7 @@ const RenderLineChart = ({portfolio}) => {
   const [filter, setFilter] = useState('Select')
   
   useEffect(() => {
-    axios.get('https://witz-zjkz.onrender.com/myportfolio')
+    axios.post('https://witz-zjkz.onrender.com/myportfolio', {username: username})
     .then(response => {
       setAllNames(response.data)
       setActive(response.data.slice(0,5))
@@ -80,7 +80,7 @@ const RenderLineChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .post('https://witz-zjkz.onrender.com/linegraph', portfolio)
+    .post('https://witz-zjkz.onrender.com/linegraph', {portfolio: portfolio, username: username})
     .then((response) => {
       setData(response.data)
       setShowing(response.data)
@@ -120,7 +120,7 @@ const RenderLineChart = ({portfolio}) => {
     </div>
 );}
 
-const RenderReturnChart = ({portfolio}) => {
+const RenderReturnChart = ({portfolio, username}) => {
   const [data, setData] = useState(null)
   const [start, setStart] = useState('2019-07-01')
   const [allnames, setAllNames] = useState([])
@@ -128,7 +128,7 @@ const RenderReturnChart = ({portfolio}) => {
   const [filter, setFilter] = useState('Select')
   
   useEffect(() => {
-    axios.get('https://witz-zjkz.onrender.com/myportfolio')
+    axios.post('https://witz-zjkz.onrender.com/myportfolio', {username: username})
     .then(response => {
       setAllNames(response.data)
       setActive(response.data.slice(0,7))
@@ -137,7 +137,7 @@ const RenderReturnChart = ({portfolio}) => {
 
   useEffect(() => {
     axios
-    .get(`https://witz-zjkz.onrender.com/returngraph/${start}`)
+    .post(`https://witz-zjkz.onrender.com/returngraph/${start}`, {username: username})
     .then((response) => {
       setData(response.data)
     })

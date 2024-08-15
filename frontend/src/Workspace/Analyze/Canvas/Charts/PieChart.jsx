@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 
-const RenderPieChart = ({portfolio}) => {
+const RenderPieChart = ({portfolio, username}) => {
   
   const [data, setData] = useState(null)
   
   useEffect(() => {
     axios
-    .post('https://witz-zjkz.onrender.com/valuepiechart', portfolio)
+    .post('https://witz-zjkz.onrender.com/valuepiechart', {portfolio: portfolio, username: username})
     .then(response => {
         console.log(response.data)
         setData(response.data)

@@ -4,13 +4,13 @@ import './index.css'
 
 const NavElement = ({text}) => <span className="navelement">{text}</span>
 
-const FileMenu = ({cur, setCur, setPortfolio, setLevs}) => {
+const FileMenu = ({cur, setCur, setPortfolio, setLevs, username}) => {
   if (cur == 'file') {
     return(
       <div style={{position:"absolute", zIndex:"5", background:"white", color:"black", padding:"4px 8px 4px 4px", borderRadius:"1px", boxShadow:"0px 5px 5px #888"}}>
         <div>
         <label for="import" style={{margin:"20px 10px 10px 10px"}}>Import Portfolio</label>
-        <input type="file" style={{opacity:0, position:"absolute"}} id="import" onChange={(e) => handleImport(e, setCur, setPortfolio, setLevs)}/>
+        <input type="file" style={{opacity:0, position:"absolute"}} id="import" onChange={(e) => handleImport(e, setCur, setPortfolio, setLevs, username)}/>
         </div>
         <div>
         <label style={{margin:"10px"}}>Import Simulation</label>
@@ -41,9 +41,9 @@ const FileMenu = ({cur, setCur, setPortfolio, setLevs}) => {
   ])
 */
 
-const handleImport = (e, setCur, setPortfolio, setLevs) => {
+const handleImport = (e, setCur, setPortfolio, setLevs, username) => {
   axios
-  .post('https://witz-zjkz.onrender.com/adduser', {name: "user123"})
+  .post('https://witz-zjkz.onrender.com/adduser', {username: username})
   .then(() => {var reader = new FileReader();
   reader.readAsText(e.target.files[0], "UTF-8");
   reader.onload = (e) => {
@@ -54,7 +54,7 @@ const handleImport = (e, setCur, setPortfolio, setLevs) => {
       
       if (a.data.length > 1) {
         a.data.slice(1).forEach((r) => {
-          axios.post('https://witz-zjkz.onrender.com/portfolioAdd', {cat: a.alt, data: r})
+          axios.post('https://witz-zjkz.onrender.com/portfolioAdd', {cat: a.alt, data: r, username: username})
           .then(levs.push(r[3]))
         })
       }
@@ -64,7 +64,7 @@ const handleImport = (e, setCur, setPortfolio, setLevs) => {
   setCur("") 
 }
 
-const Tools = ({cur, setCur, setPortfolio, setLevs}) => {
+const Tools = ({cur, setCur, setPortfolio, setLevs, username}) => {
   let [uploading, setUploading] = useState(false)
   return (
   <span className="navelement" style={{display: "flex", flexDirection:"row", alignItems:"center"}}>
@@ -73,7 +73,7 @@ const Tools = ({cur, setCur, setPortfolio, setLevs}) => {
       onBlur={(e) => console.log(e.relatedTarget)}
       >
       <span onClick={() => {cur =='file' ? setCur("") : setCur("file")}} style={cur == 'file' ? {background:"white", padding:"2px 5px 5px 5px", borderRadius:"1px", boxShadow:"0px 5px 5px #888"}:{padding:"5px"} }>File</span>
-      <FileMenu cur={cur} setCur={setCur} setPortfolio={setPortfolio} setLevs={setLevs}/>
+      <FileMenu cur={cur} setCur={setCur} setPortfolio={setPortfolio} setLevs={setLevs} username={username}/>
     </div>
     <div className="navelement"><span style={{padding:"5px"}}>View</span></div>
     <span className="navelement"><span style={{padding:"5px"}}>Settings</span></span>
@@ -88,22 +88,22 @@ const toggleCur = (n, cur, setCur) => {
   } else {setCur(n)}
 }
 
-const Left = ({cur, setCur, setPortfolio, setLevs}) => {
+const Left = ({cur, setCur, setPortfolio, setLevs, username}) => {
   return (
     <div className = "navelement" style={{display: "flex", flexDirection:"row", alignItems:"center", padding:"20px"}}>
       <span id="logo">Witz</span>
-      <Tools cur={cur} setCur={setCur} setPortfolio={setPortfolio} setLevs={setLevs}/>
+      <Tools cur={cur} setCur={setCur} setPortfolio={setPortfolio} setLevs={setLevs} username={username}/>
     </div>
   )
 }
 
-function NavBar({full, setPortfolio, setLevs}) {
+function NavBar({full, setPortfolio, setLevs, username}) {
   let [cur, setCur] = useState('')
   if (full) {return}
 
   return (
     <div id="navbar">
-      <Left cur={cur} setCur={setCur} setPortfolio={setPortfolio} setLevs={setLevs} />
+      <Left cur={cur} setCur={setCur} setPortfolio={setPortfolio} setLevs={setLevs} username={username}/>
       <NavElement text='Account'/>
     </div>
   )
